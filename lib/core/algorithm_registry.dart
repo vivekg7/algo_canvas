@@ -6,6 +6,11 @@ import 'package:algo_canvas/algorithms/dp/knapsack.dart';
 import 'package:algo_canvas/algorithms/dp/lcs.dart';
 import 'package:algo_canvas/algorithms/dp/lis.dart';
 import 'package:algo_canvas/algorithms/dp/matrix_chain.dart';
+import 'package:algo_canvas/algorithms/string/boyer_moore.dart';
+import 'package:algo_canvas/algorithms/string/kmp.dart';
+import 'package:algo_canvas/algorithms/string/manacher.dart';
+import 'package:algo_canvas/algorithms/string/rabin_karp.dart';
+import 'package:algo_canvas/algorithms/string/suffix_array.dart';
 import 'package:algo_canvas/algorithms/tree/avl_tree.dart';
 import 'package:algo_canvas/algorithms/tree/bst_operations.dart';
 import 'package:algo_canvas/algorithms/tree/heap_operations.dart';
@@ -121,6 +126,12 @@ class AlgorithmRegistry {
     CoinChangeAlgorithm(),
     LisAlgorithm(),
     MatrixChainAlgorithm(),
+    // String
+    KmpAlgorithm(),
+    RabinKarpAlgorithm(),
+    BoyerMooreAlgorithm(),
+    ManacherAlgorithm(),
+    SuffixArrayAlgorithm(),
     // Math / Signal
     SieveOfEratosthenesAlgorithm(),
     FourierTransformAlgorithm(),

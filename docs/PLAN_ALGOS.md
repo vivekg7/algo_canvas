@@ -80,11 +80,11 @@
 
 ## String
 
-- [ ] KMP Pattern Matching
-- [ ] Rabin-Karp Pattern Matching
-- [ ] Boyer-Moore
-- [ ] Longest Palindromic Substring (Manacher's)
-- [ ] Suffix Array Construction
+- [x] KMP Pattern Matching
+- [x] Rabin-Karp Pattern Matching
+- [x] Boyer-Moore
+- [x] Longest Palindromic Substring (Manacher's)
+- [x] Suffix Array Construction
 
 ## Computational Geometry
 
