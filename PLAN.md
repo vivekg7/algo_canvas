@@ -8,10 +8,10 @@ Set up the Flutter project with a strong, extensible foundation and implement Qu
 
 ## Phase 1: Flutter Project Initialization
 
-- [ ] Run `flutter create` with org name and project name
-- [ ] Strip out default counter app boilerplate
-- [ ] Clean up `pubspec.yaml` — set description, remove comments, keep dependencies minimal
-- [ ] Verify the app runs on at least one platform
+- [x] Run `flutter create` with org name and project name
+- [x] Strip out default counter app boilerplate
+- [x] Clean up `pubspec.yaml` — set description, remove comments, keep dependencies minimal
+- [x] Verify the app runs on at least one platform
 
 ---
 
