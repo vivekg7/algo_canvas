@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:algo_canvas/core/algorithm.dart';
 import 'package:algo_canvas/core/visualizer_controller.dart';
+import 'package:algo_canvas/widgets/color_legend.dart';
 import 'package:algo_canvas/widgets/playback_controls.dart';
 
 class VisualizerScreen extends StatefulWidget {
@@ -101,6 +102,13 @@ class _VisualizerScreenState extends State<VisualizerScreen> {
                     },
                   ),
                 ),
+                // Color legend
+                if (widget.algorithm.buildLegend(context)
+                    case final legendItems?)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: ColorLegend(items: legendItems),
+                  ),
                 // Algorithm-specific controls
                 if (widget.algorithm.buildControls(onChanged: _regenerate)
                     case final controls?)

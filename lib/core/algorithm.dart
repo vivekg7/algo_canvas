@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:algo_canvas/core/algorithm_category.dart';
 import 'package:algo_canvas/core/algorithm_state.dart';
+import 'package:algo_canvas/widgets/color_legend.dart';
 
 /// Execution mode for an algorithm.
 enum AlgorithmMode {
@@ -73,4 +74,9 @@ abstract class Algorithm {
   Widget? buildControls({
     required VoidCallback onChanged,
   }) => null;
+
+  /// Optional color legend items for this algorithm.
+  ///
+  /// Override to show a legend below the canvas.
+  List<LegendItem>? buildLegend(BuildContext context) => null;
 }

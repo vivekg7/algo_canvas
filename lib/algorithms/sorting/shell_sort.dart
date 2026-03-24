@@ -5,6 +5,8 @@ import 'package:algo_canvas/core/algorithm_category.dart';
 import 'package:algo_canvas/core/algorithm_state.dart';
 import 'package:algo_canvas/algorithms/sorting/sorting_state.dart';
 import 'package:algo_canvas/algorithms/sorting/sorting_painter.dart';
+import 'package:algo_canvas/algorithms/sorting/sorting_legend.dart';
+import 'package:algo_canvas/widgets/color_legend.dart';
 
 class ShellSortAlgorithm extends Algorithm {
   int _arraySize = 30;
@@ -101,6 +103,9 @@ class ShellSortAlgorithm extends Algorithm {
       brightness: Theme.of(context).brightness,
     );
   }
+
+  @override
+  List<LegendItem>? buildLegend(BuildContext context) => sortingLegend(context);
 
   @override
   Widget? buildControls({required VoidCallback onChanged}) {

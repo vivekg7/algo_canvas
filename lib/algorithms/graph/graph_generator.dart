@@ -12,21 +12,17 @@ class GraphGenerator {
     bool directed = false,
     double edgeDensity = 0.3,
   }) {
-    // Generate node positions using Poisson-like distribution
-    final nodes = <GraphNode>[];
-    for (var i = 0; i < nodeCount; i++) {
-      // Arrange in a rough circle with some randomness
+    // Initial positions: circular with randomness
+    final x = List<double>.generate(nodeCount, (i) {
       final angle = 2 * pi * i / nodeCount;
-      final radius = 0.3 + random.nextDouble() * 0.1;
-      final x = 0.5 + cos(angle) * radius + (random.nextDouble() - 0.5) * 0.1;
-      final y = 0.5 + sin(angle) * radius + (random.nextDouble() - 0.5) * 0.1;
-      nodes.add(GraphNode(
-        id: i,
-        x: x.clamp(0.05, 0.95),
-        y: y.clamp(0.05, 0.95),
-      ));
-    }
+      return 0.5 + cos(angle) * 0.3 + (random.nextDouble() - 0.5) * 0.1;
+    });
+    final y = List<double>.generate(nodeCount, (i) {
+      final angle = 2 * pi * i / nodeCount;
+      return 0.5 + sin(angle) * 0.3 + (random.nextDouble() - 0.5) * 0.1;
+    });
 
+    // Build edges first so force-directed layout knows connectivity
     final edges = <GraphEdge>[];
     final connected = <int>{0};
     final remaining = List.generate(nodeCount - 1, (i) => i + 1)
@@ -76,6 +72,19 @@ class GraphGenerator {
         }
         added++;
       }
+    }
+
+    // Force-directed layout
+    _forceDirectedLayout(x, y, edges, nodeCount);
+
+    // Create nodes from final positions
+    final nodes = <GraphNode>[];
+    for (var i = 0; i < nodeCount; i++) {
+      nodes.add(GraphNode(
+        id: i,
+        x: x[i].clamp(0.05, 0.95),
+        y: y[i].clamp(0.05, 0.95),
+      ));
     }
 
     return (nodes, edges);
@@ -143,5 +152,85 @@ class GraphGenerator {
     }
 
     return (nodes, edges);
+  }
+
+  /// Simple force-directed layout: repulsion between all nodes,
+  /// attraction along edges, iterated to convergence.
+  static void _forceDirectedLayout(
+    List<double> x,
+    List<double> y,
+    List<GraphEdge> edges,
+    int n,
+  ) {
+    const iterations = 150;
+    const repulsion = 0.002;
+    const attraction = 0.08;
+    const damping = 0.9;
+    const minDist = 0.01;
+
+    final vx = List<double>.filled(n, 0);
+    final vy = List<double>.filled(n, 0);
+
+    // Unique edges for attraction
+    final uniqueEdges = <(int, int)>{};
+    for (final e in edges) {
+      final a = min(e.from, e.to);
+      final b = max(e.from, e.to);
+      uniqueEdges.add((a, b));
+    }
+
+    for (var iter = 0; iter < iterations; iter++) {
+      final temp = 1.0 - iter / iterations; // cooling
+
+      // Repulsion: all pairs
+      for (var i = 0; i < n; i++) {
+        for (var j = i + 1; j < n; j++) {
+          var dx = x[i] - x[j];
+          var dy = y[i] - y[j];
+          var dist = sqrt(dx * dx + dy * dy);
+          if (dist < minDist) { dist = minDist; }
+
+          final force = repulsion / (dist * dist);
+          final fx = dx / dist * force;
+          final fy = dy / dist * force;
+          vx[i] += fx;
+          vy[i] += fy;
+          vx[j] -= fx;
+          vy[j] -= fy;
+        }
+      }
+
+      // Attraction: edges
+      for (final (a, b) in uniqueEdges) {
+        final dx = x[b] - x[a];
+        final dy = y[b] - y[a];
+        final dist = sqrt(dx * dx + dy * dy);
+        if (dist < minDist) { continue; }
+
+        final force = dist * attraction;
+        final fx = dx / dist * force;
+        final fy = dy / dist * force;
+        vx[a] += fx;
+        vy[a] += fy;
+        vx[b] -= fx;
+        vy[b] -= fy;
+      }
+
+      // Center gravity: pull toward (0.5, 0.5)
+      for (var i = 0; i < n; i++) {
+        vx[i] += (0.5 - x[i]) * 0.01;
+        vy[i] += (0.5 - y[i]) * 0.01;
+      }
+
+      // Apply velocities with damping and cooling
+      for (var i = 0; i < n; i++) {
+        vx[i] *= damping;
+        vy[i] *= damping;
+        x[i] += vx[i] * temp;
+        y[i] += vy[i] * temp;
+        x[i] = x[i].clamp(0.05, 0.95);
+        y[i] = y[i].clamp(0.05, 0.95);
+      }
+    }
   }
 }

@@ -19,13 +19,14 @@ class SortingPainter extends CustomPainter {
     if (maxVal == 0) return;
 
     final barWidth = size.width / array.length;
-    final barMaxHeight = size.height;
+    final showLabels = array.length <= 30 && barWidth >= 14;
+    final barMaxHeight = size.height - (showLabels ? 16 : 0);
 
     for (var i = 0; i < array.length; i++) {
       final barHeight = (array[i] / maxVal) * barMaxHeight;
       final rect = Rect.fromLTWH(
         i * barWidth,
-        size.height - barHeight,
+        size.height - barHeight - (showLabels ? 16 : 0),
         barWidth - (array.length > 100 ? 0 : 1),
         barHeight,
       );
@@ -42,6 +43,29 @@ class SortingPainter extends CustomPainter {
         ),
         paint,
       );
+
+      // Value label below bar
+      if (showLabels) {
+        final tp = TextPainter(
+          text: TextSpan(
+            text: '${array[i]}',
+            style: TextStyle(
+              fontSize: (barWidth * 0.4).clamp(7, 11),
+              color: brightness == Brightness.dark
+                  ? Colors.white54
+                  : Colors.black54,
+            ),
+          ),
+          textDirection: TextDirection.ltr,
+        )..layout();
+        tp.paint(
+          canvas,
+          Offset(
+            i * barWidth + (barWidth - tp.width) / 2,
+            size.height - 14,
+          ),
+        );
+      }
     }
   }
 
