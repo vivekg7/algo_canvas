@@ -75,7 +75,7 @@
 - [ ] N-Body Gravity
 - [ ] Boids (Flocking)
 - [x] Langton's Ant
-- [ ] Double Pendulum
+- [x] Double Pendulum
 - [ ] Wave Equation
 
 ## String

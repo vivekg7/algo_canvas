@@ -2,6 +2,7 @@ import 'package:algo_canvas/core/algorithm.dart';
 import 'package:algo_canvas/algorithms/backtracking/knights_tour.dart';
 import 'package:algo_canvas/algorithms/backtracking/n_queens.dart';
 import 'package:algo_canvas/algorithms/backtracking/sudoku_solver.dart';
+import 'package:algo_canvas/algorithms/simulation/double_pendulum.dart';
 import 'package:algo_canvas/algorithms/simulation/game_of_life.dart';
 import 'package:algo_canvas/algorithms/simulation/langtons_ant.dart';
 import 'package:algo_canvas/algorithms/searching/binary_search.dart';
@@ -46,6 +47,7 @@ class AlgorithmRegistry {
     // Physics / Simulation
     GameOfLifeAlgorithm(),
     LangtonsAntAlgorithm(),
+    DoublePendulumAlgorithm(),
   ];
 
   static List<Algorithm> get all => List.unmodifiable(_algorithms);
