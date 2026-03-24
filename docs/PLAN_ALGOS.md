@@ -96,9 +96,9 @@
 
 ## Backtracking
 
-- [ ] N-Queens
-- [ ] Sudoku Solver
-- [ ] Knight's Tour
+- [x] N-Queens
+- [x] Sudoku Solver
+- [x] Knight's Tour
 
 ## Compression / Encoding
 

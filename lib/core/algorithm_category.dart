@@ -8,7 +8,8 @@ enum AlgorithmCategory {
   mathSignal('Math / Signal'),
   physicsSimulation('Physics / Simulation'),
   string('String'),
-  computationalGeometry('Computational Geometry');
+  computationalGeometry('Computational Geometry'),
+  backtracking('Backtracking');
 
   const AlgorithmCategory(this.label);
   final String label;

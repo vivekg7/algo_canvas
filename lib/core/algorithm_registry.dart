@@ -1,4 +1,7 @@
 import 'package:algo_canvas/core/algorithm.dart';
+import 'package:algo_canvas/algorithms/backtracking/knights_tour.dart';
+import 'package:algo_canvas/algorithms/backtracking/n_queens.dart';
+import 'package:algo_canvas/algorithms/backtracking/sudoku_solver.dart';
 import 'package:algo_canvas/algorithms/searching/binary_search.dart';
 import 'package:algo_canvas/algorithms/searching/jump_search.dart';
 import 'package:algo_canvas/algorithms/searching/linear_search.dart';
@@ -34,6 +37,10 @@ class AlgorithmRegistry {
     BinarySearchAlgorithm(),
     TernarySearchAlgorithm(),
     JumpSearchAlgorithm(),
+    // Backtracking
+    NQueensAlgorithm(),
+    SudokuSolverAlgorithm(),
+    KnightsTourAlgorithm(),
   ];
 
   static List<Algorithm> get all => List.unmodifiable(_algorithms);
