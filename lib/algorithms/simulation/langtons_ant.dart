@@ -3,8 +3,6 @@ import 'package:algo_canvas/core/algorithm.dart';
 import 'package:algo_canvas/core/algorithm_category.dart';
 import 'package:algo_canvas/core/algorithm_state.dart';
 
-enum _Direction { up, right, down, left }
-
 class LangtonsAntState extends AlgorithmState {
   const LangtonsAntState({
     required this.grid,
@@ -14,6 +12,7 @@ class LangtonsAntState extends AlgorithmState {
     required this.antCol,
     required this.antDirection,
     required this.step,
+    this.finished = false,
     required super.description,
   });
 
@@ -24,11 +23,11 @@ class LangtonsAntState extends AlgorithmState {
   final int antCol;
   final int antDirection; // 0=up, 1=right, 2=down, 3=left
   final int step;
+  final bool finished;
 }
 
 class LangtonsAntAlgorithm extends Algorithm {
   int _gridSize = 80;
-  int _maxSteps = 5000;
 
   @override
   String get name => "Langton's Ant";
@@ -41,93 +40,83 @@ class LangtonsAntAlgorithm extends Algorithm {
   AlgorithmCategory get category => AlgorithmCategory.physicsSimulation;
 
   @override
-  bool get isStreaming => true;
+  AlgorithmMode get mode => AlgorithmMode.live;
 
   @override
-  Stream<AlgorithmState> stream() async* {
+  AlgorithmState createInitialState() {
     final rows = _gridSize;
     final cols = _gridSize;
     final grid = List.generate(rows, (_) => List.generate(cols, (_) => false));
 
-    var antR = rows ~/ 2;
-    var antC = cols ~/ 2;
-    var dir = _Direction.up;
+    return LangtonsAntState(
+      grid: grid,
+      rows: rows,
+      cols: cols,
+      antRow: rows ~/ 2,
+      antCol: cols ~/ 2,
+      antDirection: 0,
+      step: 0,
+      description: 'Step 0: ant starts at center facing up',
+    );
+  }
 
-    yield LangtonsAntState(
-      grid: _copyGrid(grid),
+  @override
+  AlgorithmState? tick(AlgorithmState current) {
+    final s = current as LangtonsAntState;
+    if (s.finished) return null;
+
+    final rows = s.rows;
+    final cols = s.cols;
+    final grid = [for (final row in s.grid) List<bool>.of(row)];
+    var antR = s.antRow;
+    var antC = s.antCol;
+    var dir = s.antDirection;
+
+    // Rule: on white turn right, on black turn left
+    if (grid[antR][antC]) {
+      dir = (dir + 3) % 4; // left
+    } else {
+      dir = (dir + 1) % 4; // right
+    }
+
+    // Flip
+    grid[antR][antC] = !grid[antR][antC];
+
+    // Move
+    switch (dir) {
+      case 0: antR--;
+      case 1: antC++;
+      case 2: antR++;
+      case 3: antC--;
+    }
+
+    final step = s.step + 1;
+
+    // Check bounds
+    if (antR < 0 || antR >= rows || antC < 0 || antC >= cols) {
+      return LangtonsAntState(
+        grid: grid,
+        rows: rows,
+        cols: cols,
+        antRow: antR.clamp(0, rows - 1),
+        antCol: antC.clamp(0, cols - 1),
+        antDirection: dir,
+        step: step,
+        finished: true,
+        description: 'Step $step: ant left the grid',
+      );
+    }
+
+    return LangtonsAntState(
+      grid: grid,
       rows: rows,
       cols: cols,
       antRow: antR,
       antCol: antC,
-      antDirection: dir.index,
-      step: 0,
-      description: 'Step 0: ant starts at center facing up',
+      antDirection: dir,
+      step: step,
+      description: 'Step $step',
     );
-
-    for (var step = 1; step <= _maxSteps; step++) {
-      // Yield to event loop periodically
-      if (step % 10 == 0) {
-        await Future<void>.delayed(Duration.zero);
-      }
-
-      // Rule: on white, turn right. On black, turn left.
-      if (grid[antR][antC]) {
-        // Black → turn left
-        dir = _Direction.values[(dir.index + 3) % 4];
-      } else {
-        // White → turn right
-        dir = _Direction.values[(dir.index + 1) % 4];
-      }
-
-      // Flip the cell
-      grid[antR][antC] = !grid[antR][antC];
-
-      // Move forward
-      switch (dir) {
-        case _Direction.up:
-          antR--;
-        case _Direction.right:
-          antC++;
-        case _Direction.down:
-          antR++;
-        case _Direction.left:
-          antC--;
-      }
-
-      // Stop if ant leaves the grid
-      if (antR < 0 || antR >= rows || antC < 0 || antC >= cols) {
-        yield LangtonsAntState(
-          grid: _copyGrid(grid),
-          rows: rows,
-          cols: cols,
-          antRow: antR.clamp(0, rows - 1),
-          antCol: antC.clamp(0, cols - 1),
-          antDirection: dir.index,
-          step: step,
-          description: 'Step $step: ant left the grid',
-        );
-        break;
-      }
-
-      // Only yield every few steps for large grids to keep state count manageable
-      final emitInterval = _gridSize >= 100 ? 5 : 1;
-      if (step % emitInterval == 0 || step == _maxSteps) {
-        yield LangtonsAntState(
-          grid: _copyGrid(grid),
-          rows: rows,
-          cols: cols,
-          antRow: antR,
-          antCol: antC,
-          antDirection: dir.index,
-          step: step,
-          description: 'Step $step',
-        );
-      }
-    }
-  }
-
-  List<List<bool>> _copyGrid(List<List<bool>> grid) {
-    return [for (final row in grid) List<bool>.of(row)];
   }
 
   @override
@@ -140,12 +129,10 @@ class LangtonsAntAlgorithm extends Algorithm {
 
   @override
   Widget? buildControls({required VoidCallback onChanged}) {
-    return _Controls(
+    return _GridSizeControl(
       gridSize: _gridSize,
-      maxSteps: _maxSteps,
-      onChanged: (size, steps) {
+      onChanged: (size) {
         _gridSize = size;
-        _maxSteps = steps;
         onChanged();
       },
     );
@@ -177,13 +164,11 @@ class _LangtonsAntPainter extends CustomPainter {
         ? const Color(0xFFEF5350)
         : const Color(0xFFD32F2F);
 
-    // Background
     canvas.drawRect(
       Rect.fromLTWH(offsetX, offsetY, cellSize * cols, cellSize * rows),
       Paint()..color = whiteCell,
     );
 
-    // Draw black cells
     for (var r = 0; r < rows; r++) {
       for (var c = 0; c < cols; c++) {
         if (state.grid[r][c]) {
@@ -200,37 +185,25 @@ class _LangtonsAntPainter extends CustomPainter {
       }
     }
 
-    // Draw ant
+    // Ant
     final antCenter = Offset(
       offsetX + state.antCol * cellSize + cellSize / 2,
       offsetY + state.antRow * cellSize + cellSize / 2,
     );
 
     if (cellSize >= 4) {
-      canvas.drawCircle(
-        antCenter,
-        cellSize * 0.4,
-        Paint()..color = antColor,
-      );
-
+      canvas.drawCircle(antCenter, cellSize * 0.4, Paint()..color = antColor);
       if (cellSize >= 8) {
         final tp = TextPainter(
           text: TextSpan(
             text: _dirArrows[state.antDirection],
-            style: TextStyle(
-              fontSize: cellSize * 0.5,
-              color: Colors.white,
-            ),
+            style: TextStyle(fontSize: cellSize * 0.5, color: Colors.white),
           ),
           textDirection: TextDirection.ltr,
         )..layout();
-        tp.paint(
-          canvas,
-          antCenter - Offset(tp.width / 2, tp.height / 2),
-        );
+        tp.paint(canvas, antCenter - Offset(tp.width / 2, tp.height / 2));
       }
     } else {
-      // Tiny cells: just draw a colored dot
       canvas.drawRect(
         Rect.fromLTWH(
           offsetX + state.antCol * cellSize,
@@ -242,7 +215,6 @@ class _LangtonsAntPainter extends CustomPainter {
       );
     }
 
-    // Border
     canvas.drawRect(
       Rect.fromLTWH(offsetX, offsetY, cellSize * cols, cellSize * rows),
       Paint()
@@ -258,70 +230,39 @@ class _LangtonsAntPainter extends CustomPainter {
   }
 }
 
-class _Controls extends StatefulWidget {
-  const _Controls({
-    required this.gridSize,
-    required this.maxSteps,
-    required this.onChanged,
-  });
-
+class _GridSizeControl extends StatefulWidget {
+  const _GridSizeControl({required this.gridSize, required this.onChanged});
   final int gridSize;
-  final int maxSteps;
-  final void Function(int size, int steps) onChanged;
+  final ValueChanged<int> onChanged;
 
   @override
-  State<_Controls> createState() => _ControlsState();
+  State<_GridSizeControl> createState() => _GridSizeControlState();
 }
 
-class _ControlsState extends State<_Controls> {
-  late double _sizeValue;
-  late double _stepsValue;
+class _GridSizeControlState extends State<_GridSizeControl> {
+  late double _value;
 
   @override
   void initState() {
     super.initState();
-    _sizeValue = widget.gridSize.toDouble();
-    _stepsValue = widget.maxSteps.toDouble();
+    _value = widget.gridSize.toDouble();
   }
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme.bodySmall;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    return Row(
       children: [
-        Row(
-          children: [
-            Text('Grid: ${_sizeValue.round()}×${_sizeValue.round()}',
-                style: textStyle),
-            Expanded(
-              child: Slider(
-                value: _sizeValue,
-                min: 20,
-                max: 150,
-                divisions: 26,
-                onChanged: (v) => setState(() => _sizeValue = v),
-                onChangeEnd: (v) =>
-                    widget.onChanged(v.round(), _stepsValue.round()),
-              ),
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            Text('Steps: ${_stepsValue.round()}', style: textStyle),
-            Expanded(
-              child: Slider(
-                value: _stepsValue,
-                min: 1000,
-                max: 15000,
-                divisions: 28,
-                onChanged: (v) => setState(() => _stepsValue = v),
-                onChangeEnd: (v) =>
-                    widget.onChanged(_sizeValue.round(), v.round()),
-              ),
-            ),
-          ],
+        Text('Grid: ${_value.round()}×${_value.round()}',
+            style: Theme.of(context).textTheme.bodySmall),
+        Expanded(
+          child: Slider(
+            value: _value,
+            min: 20,
+            max: 150,
+            divisions: 26,
+            onChanged: (v) => setState(() => _value = v),
+            onChangeEnd: (v) => widget.onChanged(v.round()),
+          ),
         ),
       ],
     );

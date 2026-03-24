@@ -8,6 +8,8 @@ class DoublePendulumState extends AlgorithmState {
   const DoublePendulumState({
     required this.theta1,
     required this.theta2,
+    required this.omega1,
+    required this.omega2,
     required this.l1,
     required this.l2,
     required this.trail,
@@ -15,19 +17,28 @@ class DoublePendulumState extends AlgorithmState {
     required super.description,
   });
 
-  final double theta1; // angle of first arm (radians)
-  final double theta2; // angle of second arm (radians)
-  final double l1; // length of first arm (normalized)
-  final double l2; // length of second arm (normalized)
-
-  /// Trail of tip positions as (x, y) in normalized coords centered at origin.
+  final double theta1;
+  final double theta2;
+  final double omega1; // angular velocity 1
+  final double omega2; // angular velocity 2
+  final double l1;
+  final double l2;
   final List<(double, double)> trail;
   final int step;
 }
 
 class DoublePendulumAlgorithm extends Algorithm {
-  double _angle1 = 120; // degrees
-  double _angle2 = 150; // degrees
+  double _angle1 = 120;
+  double _angle2 = 150;
+
+  static const _l1 = 0.4;
+  static const _l2 = 0.4;
+  static const _m1 = 1.0;
+  static const _m2 = 1.0;
+  static const _g = 9.81;
+  static const _dt = 0.005;
+  static const _stepsPerTick = 4;
+  static const _maxTrailLength = 800;
 
   @override
   String get name => 'Double Pendulum';
@@ -40,90 +51,73 @@ class DoublePendulumAlgorithm extends Algorithm {
   AlgorithmCategory get category => AlgorithmCategory.physicsSimulation;
 
   @override
-  bool get isStreaming => true;
+  AlgorithmMode get mode => AlgorithmMode.live;
 
   @override
-  Stream<AlgorithmState> stream() async* {
-    const l1 = 0.4; // normalized lengths
-    const l2 = 0.4;
-    const m1 = 1.0;
-    const m2 = 1.0;
-    const g = 9.81;
-    const dt = 0.005;
-    const stepsPerFrame = 4;
-    const maxFrames = 3000;
-    const maxTrailLength = 800;
+  AlgorithmState createInitialState() {
+    final th1 = _angle1 * pi / 180;
+    final th2 = _angle2 * pi / 180;
+    final tipX = _l1 * sin(th1) + _l2 * sin(th2);
+    final tipY = _l1 * cos(th1) + _l2 * cos(th2);
 
-    var th1 = _angle1 * pi / 180;
-    var th2 = _angle2 * pi / 180;
-    var w1 = 0.0; // angular velocity
-    var w2 = 0.0;
-
-    final trail = <(double, double)>[];
-
-    // Compute tip position
-    (double, double) tip() {
-      final x = l1 * sin(th1) + l2 * sin(th2);
-      final y = l1 * cos(th1) + l2 * cos(th2);
-      return (x, y);
-    }
-
-    trail.add(tip());
-
-    yield DoublePendulumState(
+    return DoublePendulumState(
       theta1: th1,
       theta2: th2,
-      l1: l1,
-      l2: l2,
-      trail: List.of(trail),
+      omega1: 0,
+      omega2: 0,
+      l1: _l1,
+      l2: _l2,
+      trail: [(tipX, tipY)],
       step: 0,
       description: 'Initial angles: ${_angle1.round()}° and ${_angle2.round()}°',
     );
-
-    for (var frame = 1; frame <= maxFrames; frame++) {
-      if (frame % 20 == 0) {
-        await Future<void>.delayed(Duration.zero);
-      }
-
-      // Runge-Kutta 4th order integration, multiple sub-steps per frame
-      for (var s = 0; s < stepsPerFrame; s++) {
-        final (nw1, nw2) = _rk4Step(th1, th2, w1, w2, m1, m2, l1, l2, g, dt);
-        w1 = nw1;
-        w2 = nw2;
-        th1 += w1 * dt;
-        th2 += w2 * dt;
-      }
-
-      final t = tip();
-      trail.add(t);
-      if (trail.length > maxTrailLength) {
-        trail.removeAt(0);
-      }
-
-      yield DoublePendulumState(
-        theta1: th1,
-        theta2: th2,
-        l1: l1,
-        l2: l2,
-        trail: List.of(trail),
-        step: frame,
-        description: 'Step $frame',
-      );
-    }
   }
 
-  /// RK4 integration step. Returns updated (w1, w2).
+  @override
+  AlgorithmState? tick(AlgorithmState current) {
+    final s = current as DoublePendulumState;
+
+    var th1 = s.theta1;
+    var th2 = s.theta2;
+    var w1 = s.omega1;
+    var w2 = s.omega2;
+
+    for (var i = 0; i < _stepsPerTick; i++) {
+      final (nw1, nw2) =
+          _rk4Step(th1, th2, w1, w2, _m1, _m2, _l1, _l2, _g, _dt);
+      w1 = nw1;
+      w2 = nw2;
+      th1 += w1 * _dt;
+      th2 += w2 * _dt;
+    }
+
+    final tipX = _l1 * sin(th1) + _l2 * sin(th2);
+    final tipY = _l1 * cos(th1) + _l2 * cos(th2);
+
+    final trail = List<(double, double)>.of(s.trail);
+    trail.add((tipX, tipY));
+    if (trail.length > _maxTrailLength) {
+      trail.removeAt(0);
+    }
+
+    final step = s.step + 1;
+
+    return DoublePendulumState(
+      theta1: th1,
+      theta2: th2,
+      omega1: w1,
+      omega2: w2,
+      l1: _l1,
+      l2: _l2,
+      trail: trail,
+      step: step,
+      description: 'Step $step',
+    );
+  }
+
   (double, double) _rk4Step(
-    double th1,
-    double th2,
-    double w1,
-    double w2,
-    double m1,
-    double m2,
-    double l1,
-    double l2,
-    double g,
-    double dt,
+    double th1, double th2, double w1, double w2,
+    double m1, double m2, double l1, double l2, double g, double dt,
   ) {
     (double, double) derivs(double t1, double t2, double v1, double v2) {
       final dth = t1 - t2;
@@ -150,11 +144,14 @@ class DoublePendulumAlgorithm extends Algorithm {
 
     final (k1a, k1b) = derivs(th1, th2, w1, w2);
     final (k2a, k2b) = derivs(
-        th1 + w1 * dt / 2, th2 + w2 * dt / 2, w1 + k1a * dt / 2, w2 + k1b * dt / 2);
+        th1 + w1 * dt / 2, th2 + w2 * dt / 2,
+        w1 + k1a * dt / 2, w2 + k1b * dt / 2);
     final (k3a, k3b) = derivs(
-        th1 + w1 * dt / 2, th2 + w2 * dt / 2, w1 + k2a * dt / 2, w2 + k2b * dt / 2);
+        th1 + w1 * dt / 2, th2 + w2 * dt / 2,
+        w1 + k2a * dt / 2, w2 + k2b * dt / 2);
     final (k4a, k4b) = derivs(
-        th1 + w1 * dt, th2 + w2 * dt, w1 + k3a * dt, w2 + k3b * dt);
+        th1 + w1 * dt, th2 + w2 * dt,
+        w1 + k3a * dt, w2 + k3b * dt);
 
     final nw1 = w1 + (dt / 6) * (k1a + 2 * k2a + 2 * k3a + k4a);
     final nw2 = w2 + (dt / 6) * (k1b + 2 * k2b + 2 * k3b + k4b);
@@ -196,20 +193,16 @@ class _DoublePendulumPainter extends CustomPainter {
     final scale = size.shortestSide * 0.55;
     final center = Offset(size.width / 2, size.height * 0.35);
 
-    final l1 = state.l1;
-    final l2 = state.l2;
-
-    // Joint and tip positions
     final joint = Offset(
-      center.dx + l1 * sin(state.theta1) * scale,
-      center.dy + l1 * cos(state.theta1) * scale,
+      center.dx + state.l1 * sin(state.theta1) * scale,
+      center.dy + state.l1 * cos(state.theta1) * scale,
     );
     final tip = Offset(
-      joint.dx + l2 * sin(state.theta2) * scale,
-      joint.dy + l2 * cos(state.theta2) * scale,
+      joint.dx + state.l2 * sin(state.theta2) * scale,
+      joint.dy + state.l2 * cos(state.theta2) * scale,
     );
 
-    // Draw trail
+    // Trail
     if (state.trail.length > 1) {
       final trailPath = Path();
       final first = state.trail.first;
@@ -217,20 +210,14 @@ class _DoublePendulumPainter extends CustomPainter {
         center.dx + first.$1 * scale,
         center.dy + first.$2 * scale,
       );
-
       for (var i = 1; i < state.trail.length; i++) {
         final p = state.trail[i];
-        trailPath.lineTo(
-          center.dx + p.$1 * scale,
-          center.dy + p.$2 * scale,
-        );
+        trailPath.lineTo(center.dx + p.$1 * scale, center.dy + p.$2 * scale);
       }
 
-      // Gradient trail: older = more transparent
       final trailColor = isDark
           ? const Color(0xFF42A5F5)
           : const Color(0xFF1976D2);
-
       canvas.drawPath(
         trailPath,
         Paint()
@@ -241,40 +228,30 @@ class _DoublePendulumPainter extends CustomPainter {
       );
     }
 
-    // Draw arms
+    // Arms
     final armPaint = Paint()
       ..color = isDark ? Colors.white70 : Colors.black87
       ..strokeWidth = 3
       ..strokeCap = StrokeCap.round;
-
     canvas.drawLine(center, joint, armPaint);
     canvas.drawLine(joint, tip, armPaint);
 
-    // Draw pivot
+    // Pivot
     canvas.drawCircle(
-      center,
-      5,
+      center, 5,
       Paint()..color = isDark ? Colors.white54 : Colors.black45,
     );
 
-    // Draw joint
+    // Joint
     canvas.drawCircle(
-      joint,
-      7,
-      Paint()
-        ..color = isDark
-            ? const Color(0xFFFFCA28)
-            : const Color(0xFFF9A825),
+      joint, 7,
+      Paint()..color = isDark ? const Color(0xFFFFCA28) : const Color(0xFFF9A825),
     );
 
-    // Draw tip (bob)
+    // Bob
     canvas.drawCircle(
-      tip,
-      9,
-      Paint()
-        ..color = isDark
-            ? const Color(0xFFEF5350)
-            : const Color(0xFFD32F2F),
+      tip, 9,
+      Paint()..color = isDark ? const Color(0xFFEF5350) : const Color(0xFFD32F2F),
     );
   }
 
@@ -321,10 +298,7 @@ class _ControlsState extends State<_Controls> {
             Text('Arm 1: ${_a1.round()}°', style: textStyle),
             Expanded(
               child: Slider(
-                value: _a1,
-                min: 0,
-                max: 180,
-                divisions: 36,
+                value: _a1, min: 0, max: 180, divisions: 36,
                 onChanged: (v) => setState(() => _a1 = v),
                 onChangeEnd: (v) => widget.onChanged(v, _a2),
               ),
@@ -336,10 +310,7 @@ class _ControlsState extends State<_Controls> {
             Text('Arm 2: ${_a2.round()}°', style: textStyle),
             Expanded(
               child: Slider(
-                value: _a2,
-                min: 0,
-                max: 180,
-                divisions: 36,
+                value: _a2, min: 0, max: 180, divisions: 36,
                 onChanged: (v) => setState(() => _a2 = v),
                 onChangeEnd: (v) => widget.onChanged(_a1, v),
               ),

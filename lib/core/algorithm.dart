@@ -2,11 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:algo_canvas/core/algorithm_category.dart';
 import 'package:algo_canvas/core/algorithm_state.dart';
 
+/// Execution mode for an algorithm.
+enum AlgorithmMode {
+  /// Pre-compute all steps, full history, scrubbing.
+  batch,
+
+  /// Steps produced on-the-fly via stream, buffered history.
+  streaming,
+
+  /// Runs indefinitely via [tick]. Rolling buffer of last N states.
+  live,
+}
+
 /// Base class for all algorithm visualizers.
 ///
-/// Subclasses must override either [generate] (batch) or [stream] (on-the-fly).
-/// The default implementations delegate to each other, so overriding one is
-/// sufficient.
+/// Subclasses choose an execution mode:
+/// - **Batch**: override [generate].
+/// - **Streaming**: override [stream] and set [mode] to [AlgorithmMode.streaming].
+/// - **Live**: override [createInitialState] and [tick], set [mode] to [AlgorithmMode.live].
 abstract class Algorithm {
   const Algorithm();
 
@@ -14,11 +27,10 @@ abstract class Algorithm {
   String get description;
   AlgorithmCategory get category;
 
-  /// Whether this algorithm produces steps on-the-fly via [stream] rather than
-  /// pre-computing all steps via [generate].
-  ///
-  /// The visualizer controller uses this to decide its playback strategy.
-  bool get isStreaming => false;
+  /// The execution mode for this algorithm.
+  AlgorithmMode get mode => AlgorithmMode.batch;
+
+  // -- Batch mode --
 
   /// Pre-compute all steps and return them as a list.
   ///
@@ -26,6 +38,8 @@ abstract class Algorithm {
   Future<List<AlgorithmState>> generate() async {
     return stream().toList();
   }
+
+  // -- Streaming mode --
 
   /// Yield states one at a time as they are computed.
   ///
@@ -36,6 +50,17 @@ abstract class Algorithm {
       yield state;
     }
   }
+
+  // -- Live mode --
+
+  /// Create the initial state for live mode.
+  AlgorithmState? createInitialState() => null;
+
+  /// Compute the next state from the current one.
+  /// Return null to signal the simulation has ended.
+  AlgorithmState? tick(AlgorithmState current) => null;
+
+  // -- Shared --
 
   /// Returns a [CustomPainter] that renders the given [state].
   ///

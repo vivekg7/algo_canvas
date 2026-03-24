@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:algo_canvas/core/algorithm.dart';
 import 'package:algo_canvas/core/visualizer_controller.dart';
 
 class PlaybackControls extends StatelessWidget {
@@ -14,15 +15,50 @@ class PlaybackControls extends StatelessWidget {
     return ListenableBuilder(
       listenable: controller,
       builder: (context, _) {
+        final isLive = controller.mode == AlgorithmMode.live;
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildProgressBar(context),
+            if (isLive)
+              _buildLiveInfo(context)
+            else
+              _buildProgressBar(context),
             const SizedBox(height: 4),
             _buildButtons(context),
           ],
         );
       },
+    );
+  }
+
+  Widget _buildLiveInfo(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final generation = controller.currentIndex;
+    final viewingHistory = controller.isViewingLiveHistory;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Generation: $generation',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+          ),
+          if (viewingHistory) ...[
+            const SizedBox(width: 8),
+            Text(
+              '(reviewing)',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: colorScheme.primary,
+                    fontStyle: FontStyle.italic,
+                  ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 
@@ -64,6 +100,7 @@ class PlaybackControls extends StatelessWidget {
 
   Widget _buildButtons(BuildContext context) {
     final isPlaying = controller.isPlaying;
+    final isLive = controller.mode == AlgorithmMode.live;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -72,9 +109,13 @@ class PlaybackControls extends StatelessWidget {
         const SizedBox(width: 8),
         IconButton(
           icon: const Icon(Icons.skip_previous_rounded),
-          onPressed: controller.currentIndex > 0
-              ? controller.stepBackward
-              : null,
+          onPressed: isLive
+              ? (controller.isViewingLiveHistory || !isPlaying
+                  ? controller.stepBackward
+                  : null)
+              : (controller.currentIndex > 0
+                  ? controller.stepBackward
+                  : null),
           tooltip: 'Previous step',
         ),
         const SizedBox(width: 4),
@@ -90,9 +131,11 @@ class PlaybackControls extends StatelessWidget {
         const SizedBox(width: 4),
         IconButton(
           icon: const Icon(Icons.skip_next_rounded),
-          onPressed: controller.currentIndex < controller.totalSteps - 1
-              ? controller.stepForward
-              : null,
+          onPressed: isLive
+              ? (!isPlaying ? controller.stepForward : null)
+              : (controller.currentIndex < controller.totalSteps - 1
+                  ? controller.stepForward
+                  : null),
           tooltip: 'Next step',
         ),
         const SizedBox(width: 8),
