@@ -74,7 +74,7 @@
 - [ ] Fluid Simulation
 - [ ] N-Body Gravity
 - [ ] Boids (Flocking)
-- [ ] Langton's Ant
+- [x] Langton's Ant
 - [ ] Double Pendulum
 - [ ] Wave Equation
 
