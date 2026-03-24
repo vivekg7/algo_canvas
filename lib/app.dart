@@ -17,6 +17,7 @@ class AlgoCanvasApp extends StatelessWidget {
           theme: themeController.lightTheme,
           darkTheme: themeController.darkTheme,
           themeMode: themeController.themeMode,
+          debugShowCheckedModeBanner: false,
           home: HomeScreen(themeController: themeController),
         );
       },
