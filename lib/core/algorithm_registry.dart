@@ -6,6 +6,7 @@ import 'package:algo_canvas/algorithms/simulation/boids.dart';
 import 'package:algo_canvas/algorithms/simulation/wave_equation.dart';
 import 'package:algo_canvas/algorithms/simulation/double_pendulum.dart';
 import 'package:algo_canvas/algorithms/simulation/game_of_life.dart';
+import 'package:algo_canvas/algorithms/simulation/n_body.dart';
 import 'package:algo_canvas/algorithms/simulation/langtons_ant.dart';
 import 'package:algo_canvas/algorithms/searching/binary_search.dart';
 import 'package:algo_canvas/algorithms/searching/jump_search.dart';
@@ -52,6 +53,7 @@ class AlgorithmRegistry {
     DoublePendulumAlgorithm(),
     BoidsAlgorithm(),
     WaveEquationAlgorithm(),
+    NBodyAlgorithm(),
   ];
 
   static List<Algorithm> get all => List.unmodifiable(_algorithms);
