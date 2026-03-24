@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:algo_canvas/screens/home_screen.dart';
 
 class AlgoCanvasApp extends StatelessWidget {
   const AlgoCanvasApp({super.key});
@@ -11,11 +12,7 @@ class AlgoCanvasApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Scaffold(
-        body: Center(
-          child: Text('Algo Canvas'),
-        ),
-      ),
+      home: const HomeScreen(),
     );
   }
 }
