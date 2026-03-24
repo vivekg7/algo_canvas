@@ -1,4 +1,8 @@
 import 'package:algo_canvas/core/algorithm.dart';
+import 'package:algo_canvas/algorithms/searching/binary_search.dart';
+import 'package:algo_canvas/algorithms/searching/jump_search.dart';
+import 'package:algo_canvas/algorithms/searching/linear_search.dart';
+import 'package:algo_canvas/algorithms/searching/ternary_search.dart';
 import 'package:algo_canvas/algorithms/sorting/bubble_sort.dart';
 import 'package:algo_canvas/algorithms/sorting/counting_sort.dart';
 import 'package:algo_canvas/algorithms/sorting/heap_sort.dart';
@@ -25,6 +29,11 @@ class AlgorithmRegistry {
     TimSortAlgorithm(),
     CountingSortAlgorithm(),
     RadixSortAlgorithm(),
+    // Searching
+    LinearSearchAlgorithm(),
+    BinarySearchAlgorithm(),
+    TernarySearchAlgorithm(),
+    JumpSearchAlgorithm(),
   ];
 
   static List<Algorithm> get all => List.unmodifiable(_algorithms);

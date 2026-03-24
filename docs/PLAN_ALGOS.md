@@ -35,10 +35,10 @@
 
 ## Searching
 
-- [ ] Linear Search
-- [ ] Binary Search
-- [ ] Ternary Search
-- [ ] Jump Search
+- [x] Linear Search
+- [x] Binary Search
+- [x] Ternary Search
+- [x] Jump Search
 
 ## Tree
 
