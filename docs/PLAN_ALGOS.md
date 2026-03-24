@@ -52,13 +52,13 @@
 
 ## Dynamic Programming
 
-- [ ] 0/1 Knapsack
-- [ ] Longest Common Subsequence (LCS)
-- [ ] Edit Distance (Levenshtein)
-- [ ] Fibonacci (Memoization vs Tabulation)
-- [ ] Coin Change
-- [ ] Longest Increasing Subsequence (LIS)
-- [ ] Matrix Chain Multiplication
+- [x] 0/1 Knapsack
+- [x] Longest Common Subsequence (LCS)
+- [x] Edit Distance (Levenshtein)
+- [x] Fibonacci (Memoization vs Tabulation)
+- [x] Coin Change
+- [x] Longest Increasing Subsequence (LIS)
+- [x] Matrix Chain Multiplication
 
 ## Math / Signal
 

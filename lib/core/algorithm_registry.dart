@@ -1,4 +1,11 @@
 import 'package:algo_canvas/core/algorithm.dart';
+import 'package:algo_canvas/algorithms/dp/coin_change.dart';
+import 'package:algo_canvas/algorithms/dp/edit_distance.dart';
+import 'package:algo_canvas/algorithms/dp/fibonacci.dart';
+import 'package:algo_canvas/algorithms/dp/knapsack.dart';
+import 'package:algo_canvas/algorithms/dp/lcs.dart';
+import 'package:algo_canvas/algorithms/dp/lis.dart';
+import 'package:algo_canvas/algorithms/dp/matrix_chain.dart';
 import 'package:algo_canvas/algorithms/graph/a_star.dart';
 import 'package:algo_canvas/algorithms/graph/bellman_ford.dart';
 import 'package:algo_canvas/algorithms/graph/bfs.dart';
@@ -80,6 +87,14 @@ class AlgorithmRegistry {
     PrimAlgorithm(),
     TopologicalSortAlgorithm(),
     FloydWarshallAlgorithm(),
+    // Dynamic Programming
+    FibonacciAlgorithm(),
+    KnapsackAlgorithm(),
+    LcsAlgorithm(),
+    EditDistanceAlgorithm(),
+    CoinChangeAlgorithm(),
+    LisAlgorithm(),
+    MatrixChainAlgorithm(),
     // Math / Signal
     SieveOfEratosthenesAlgorithm(),
     FourierTransformAlgorithm(),
