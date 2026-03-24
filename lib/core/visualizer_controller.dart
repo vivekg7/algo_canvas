@@ -119,7 +119,7 @@ class VisualizerController extends ChangeNotifier {
   }
 
   void setSpeed(double speed) {
-    _speed = speed.clamp(0.25, 8.0);
+    _speed = speed.clamp(0.25, 16.0);
     if (isPlaying) {
       _stopTimer();
       _startTimer();

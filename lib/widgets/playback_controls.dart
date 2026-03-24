@@ -111,7 +111,7 @@ class _SpeedButton extends StatelessWidget {
 
   final VisualizerController controller;
 
-  static const _speeds = [0.25, 0.5, 1.0, 2.0, 4.0, 8.0];
+  static const _speeds = [0.25, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0];
 
   @override
   Widget build(BuildContext context) {
