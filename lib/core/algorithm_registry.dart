@@ -1,4 +1,9 @@
 import 'package:algo_canvas/core/algorithm.dart';
+import 'package:algo_canvas/algorithms/geometry/convex_hull_graham.dart';
+import 'package:algo_canvas/algorithms/geometry/convex_hull_jarvis.dart';
+import 'package:algo_canvas/algorithms/geometry/delaunay.dart';
+import 'package:algo_canvas/algorithms/geometry/line_intersection.dart';
+import 'package:algo_canvas/algorithms/geometry/voronoi.dart';
 import 'package:algo_canvas/algorithms/compression/huffman.dart';
 import 'package:algo_canvas/algorithms/compression/lzw.dart';
 import 'package:algo_canvas/algorithms/compression/rle.dart';
@@ -145,6 +150,12 @@ class AlgorithmRegistry {
     HuffmanAlgorithm(),
     RleAlgorithm(),
     LzwAlgorithm(),
+    // Computational Geometry
+    ConvexHullGrahamAlgorithm(),
+    ConvexHullJarvisAlgorithm(),
+    LineIntersectionAlgorithm(),
+    VoronoiAlgorithm(),
+    DelaunayAlgorithm(),
   ];
 
   static List<Algorithm> get all => List.unmodifiable(_algorithms);

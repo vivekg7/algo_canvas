@@ -88,11 +88,11 @@
 
 ## Computational Geometry
 
-- [ ] Convex Hull (Graham Scan)
-- [ ] Convex Hull (Jarvis March)
-- [ ] Line Segment Intersection
-- [ ] Voronoi Diagram
-- [ ] Delaunay Triangulation
+- [x] Convex Hull (Graham Scan)
+- [x] Convex Hull (Jarvis March)
+- [x] Line Segment Intersection
+- [x] Voronoi Diagram
+- [x] Delaunay Triangulation
 
 ## Backtracking
 
