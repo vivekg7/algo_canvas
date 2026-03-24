@@ -5,6 +5,6 @@ void main() {
   testWidgets('App launches with home screen', (WidgetTester tester) async {
     await tester.pumpWidget(const AlgoCanvasApp());
     expect(find.text('Algo Canvas'), findsOneWidget);
-    expect(find.text('No algorithms registered yet.'), findsOneWidget);
+    expect(find.text('Quick Sort'), findsOneWidget);
   });
 }

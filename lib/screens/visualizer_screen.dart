@@ -93,7 +93,7 @@ class _VisualizerScreenState extends State<VisualizerScreen> {
                         padding: const EdgeInsets.all(16),
                         child: ClipRect(
                           child: CustomPaint(
-                            painter: widget.algorithm.createPainter(state),
+                            painter: widget.algorithm.createPainter(state, context),
                             size: Size.infinite,
                           ),
                         ),

@@ -38,7 +38,9 @@ abstract class Algorithm {
   }
 
   /// Returns a [CustomPainter] that renders the given [state].
-  CustomPainter createPainter(AlgorithmState state);
+  ///
+  /// [context] is provided so painters can read theme brightness, colors, etc.
+  CustomPainter createPainter(AlgorithmState state, BuildContext context);
 
   /// Optional widget for algorithm-specific controls (e.g. array size slider).
   ///
