@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:algo_canvas/app.dart';
+import 'package:algo_canvas/theme/theme_controller.dart';
 
 void main() {
-  runApp(const AlgoCanvasApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  final themeController = ThemeController();
+  runApp(AlgoCanvasApp(themeController: themeController));
 }

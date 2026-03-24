@@ -15,7 +15,7 @@ Set up the Flutter project with a strong, extensible foundation and implement Qu
 
 ---
 
-## Phase 2: Core Architecture
+## Phase 2: Core Architecture ✅
 
 ### 2.1 Algorithm Abstraction
 
@@ -80,7 +80,7 @@ Uses a `Timer` or `Ticker` internally to advance steps at the configured speed. 
 
 ---
 
-## Phase 3: Screens
+## Phase 3: Screens ✅
 
 ### 3.1 Home Screen
 
@@ -124,7 +124,7 @@ lib/
 
 ---
 
-## Phase 4: Quick Sort Implementation
+## Phase 4: Quick Sort Implementation ✅
 
 ### 4.1 Sorting State
 
@@ -167,7 +167,7 @@ lib/
 
 ---
 
-## Phase 5: Theming and Polish
+## Phase 5: Theming and Polish ✅
 
 ### 5.1 Four Theme Modes
 
@@ -211,6 +211,7 @@ lib/
   algorithms/
     sorting/
       sorting_state.dart
+      sorting_painter.dart
       quick_sort.dart
   widgets/
     algorithm_card.dart
