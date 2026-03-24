@@ -15,15 +15,15 @@
 
 ## Graph Traversal
 
-- [ ] Breadth-First Search (BFS)
-- [ ] Depth-First Search (DFS)
-- [ ] Dijkstra's Shortest Path
-- [ ] A* Search
-- [ ] Bellman-Ford
-- [ ] Kruskal's MST
-- [ ] Prim's MST
-- [ ] Topological Sort
-- [ ] Floyd-Warshall
+- [x] Breadth-First Search (BFS)
+- [x] Depth-First Search (DFS)
+- [x] Dijkstra's Shortest Path
+- [x] A* Search
+- [x] Bellman-Ford
+- [x] Kruskal's MST
+- [x] Prim's MST
+- [x] Topological Sort
+- [x] Floyd-Warshall
 
 ## Pathfinding
 

@@ -1,4 +1,13 @@
 import 'package:algo_canvas/core/algorithm.dart';
+import 'package:algo_canvas/algorithms/graph/a_star.dart';
+import 'package:algo_canvas/algorithms/graph/bellman_ford.dart';
+import 'package:algo_canvas/algorithms/graph/bfs.dart';
+import 'package:algo_canvas/algorithms/graph/dfs.dart';
+import 'package:algo_canvas/algorithms/graph/dijkstra.dart';
+import 'package:algo_canvas/algorithms/graph/floyd_warshall.dart';
+import 'package:algo_canvas/algorithms/graph/kruskal.dart';
+import 'package:algo_canvas/algorithms/graph/prim.dart';
+import 'package:algo_canvas/algorithms/graph/topological_sort.dart';
 import 'package:algo_canvas/algorithms/math/euclidean_gcd.dart';
 import 'package:algo_canvas/algorithms/math/fourier_transform.dart';
 import 'package:algo_canvas/algorithms/math/monte_carlo_pi.dart';
@@ -61,6 +70,16 @@ class AlgorithmRegistry {
     WaveEquationAlgorithm(),
     NBodyAlgorithm(),
     FluidSimulationAlgorithm(),
+    // Graph Traversal
+    BfsAlgorithm(),
+    DfsAlgorithm(),
+    DijkstraAlgorithm(),
+    AStarAlgorithm(),
+    BellmanFordAlgorithm(),
+    KruskalAlgorithm(),
+    PrimAlgorithm(),
+    TopologicalSortAlgorithm(),
+    FloydWarshallAlgorithm(),
     // Math / Signal
     SieveOfEratosthenesAlgorithm(),
     FourierTransformAlgorithm(),
