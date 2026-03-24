@@ -71,7 +71,7 @@
 ## Physics / Simulation
 
 - [x] Conway's Game of Life
-- [ ] Fluid Simulation
+- [x] Fluid Simulation
 - [x] N-Body Gravity
 - [x] Boids (Flocking)
 - [x] Langton's Ant
