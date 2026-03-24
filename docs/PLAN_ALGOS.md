@@ -73,7 +73,7 @@
 - [x] Conway's Game of Life
 - [ ] Fluid Simulation
 - [ ] N-Body Gravity
-- [ ] Boids (Flocking)
+- [x] Boids (Flocking)
 - [x] Langton's Ant
 - [x] Double Pendulum
 - [ ] Wave Equation
