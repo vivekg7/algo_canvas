@@ -1,4 +1,9 @@
 import 'package:algo_canvas/core/algorithm.dart';
+import 'package:algo_canvas/algorithms/math/euclidean_gcd.dart';
+import 'package:algo_canvas/algorithms/math/fourier_transform.dart';
+import 'package:algo_canvas/algorithms/math/monte_carlo_pi.dart';
+import 'package:algo_canvas/algorithms/math/newtons_method.dart';
+import 'package:algo_canvas/algorithms/math/sieve_of_eratosthenes.dart';
 import 'package:algo_canvas/algorithms/backtracking/knights_tour.dart';
 import 'package:algo_canvas/algorithms/backtracking/n_queens.dart';
 import 'package:algo_canvas/algorithms/backtracking/sudoku_solver.dart';
@@ -56,6 +61,12 @@ class AlgorithmRegistry {
     WaveEquationAlgorithm(),
     NBodyAlgorithm(),
     FluidSimulationAlgorithm(),
+    // Math / Signal
+    SieveOfEratosthenesAlgorithm(),
+    FourierTransformAlgorithm(),
+    EuclideanGcdAlgorithm(),
+    NewtonsMethodAlgorithm(),
+    MonteCarloPiAlgorithm(),
   ];
 
   static List<Algorithm> get all => List.unmodifiable(_algorithms);

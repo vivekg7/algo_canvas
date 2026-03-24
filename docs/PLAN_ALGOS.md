@@ -62,11 +62,11 @@
 
 ## Math / Signal
 
-- [ ] Sieve of Eratosthenes
-- [ ] Fourier Transform (DFT / FFT)
-- [ ] Euclidean Algorithm (GCD)
-- [ ] Newton's Method (Root Finding)
-- [ ] Monte Carlo Pi Estimation
+- [x] Sieve of Eratosthenes
+- [x] Fourier Transform (DFT / FFT)
+- [x] Euclidean Algorithm (GCD)
+- [x] Newton's Method (Root Finding)
+- [x] Monte Carlo Pi Estimation
 
 ## Physics / Simulation
 
