@@ -27,11 +27,11 @@
 
 ## Pathfinding
 
-- [ ] A* on Grid
-- [ ] Maze Generation (Recursive Backtracker)
-- [ ] Maze Generation (Prim's)
-- [ ] Maze Solving (Wall Follower)
-- [ ] Maze Solving (BFS Shortest Path)
+- [x] A* on Grid
+- [x] Maze Generation (Recursive Backtracker)
+- [x] Maze Generation (Prim's)
+- [x] Maze Solving (Wall Follower)
+- [x] Maze Solving (BFS Shortest Path)
 
 ## Searching
 

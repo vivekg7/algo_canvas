@@ -6,6 +6,11 @@ import 'package:algo_canvas/algorithms/dp/knapsack.dart';
 import 'package:algo_canvas/algorithms/dp/lcs.dart';
 import 'package:algo_canvas/algorithms/dp/lis.dart';
 import 'package:algo_canvas/algorithms/dp/matrix_chain.dart';
+import 'package:algo_canvas/algorithms/pathfinding/a_star_grid.dart';
+import 'package:algo_canvas/algorithms/pathfinding/maze_gen_backtracker.dart';
+import 'package:algo_canvas/algorithms/pathfinding/maze_gen_prim.dart';
+import 'package:algo_canvas/algorithms/pathfinding/maze_solve_bfs.dart';
+import 'package:algo_canvas/algorithms/pathfinding/maze_solve_wall_follower.dart';
 import 'package:algo_canvas/algorithms/graph/a_star.dart';
 import 'package:algo_canvas/algorithms/graph/bellman_ford.dart';
 import 'package:algo_canvas/algorithms/graph/bfs.dart';
@@ -87,6 +92,12 @@ class AlgorithmRegistry {
     PrimAlgorithm(),
     TopologicalSortAlgorithm(),
     FloydWarshallAlgorithm(),
+    // Pathfinding
+    AStarGridAlgorithm(),
+    MazeGenBacktrackerAlgorithm(),
+    MazeGenPrimAlgorithm(),
+    MazeSolveWallFollowerAlgorithm(),
+    MazeSolveBfsAlgorithm(),
     // Dynamic Programming
     FibonacciAlgorithm(),
     KnapsackAlgorithm(),
