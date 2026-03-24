@@ -70,7 +70,7 @@
 
 ## Physics / Simulation
 
-- [ ] Conway's Game of Life
+- [x] Conway's Game of Life
 - [ ] Fluid Simulation
 - [ ] N-Body Gravity
 - [ ] Boids (Flocking)

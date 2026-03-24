@@ -18,6 +18,9 @@ class VisualizerController extends ChangeNotifier {
   StreamSubscription<AlgorithmState>? _streamSubscription;
   bool _streamDone = false;
 
+  /// How far ahead of playback the stream is allowed to buffer.
+  static const _bufferAhead = 100;
+
   // -- Public getters --
 
   List<AlgorithmState> get states => List.unmodifiable(_states);
@@ -26,6 +29,7 @@ class VisualizerController extends ChangeNotifier {
   PlaybackState get playbackState => _playbackState;
   double get speed => _speed;
   bool get isPlaying => _playbackState == PlaybackState.playing;
+  bool get isStreaming => _algorithm.isStreaming;
 
   AlgorithmState? get currentState =>
       _currentIndex >= 0 && _currentIndex < _states.length
@@ -48,8 +52,7 @@ class VisualizerController extends ChangeNotifier {
       _streamSubscription = _algorithm.stream().listen(
         (state) {
           _states.add(state);
-          // If we're playing and were waiting for more states, the timer
-          // will pick it up on the next tick.
+          _manageStreamFlow();
           notifyListeners();
         },
         onDone: () {
@@ -81,6 +84,7 @@ class VisualizerController extends ChangeNotifier {
       _currentIndex = 0;
     }
     _playbackState = PlaybackState.playing;
+    _resumeStreamIfNeeded();
     _startTimer();
     notifyListeners();
   }
@@ -96,6 +100,7 @@ class VisualizerController extends ChangeNotifier {
       _currentIndex++;
       _playbackState = PlaybackState.paused;
       _stopTimer();
+      _manageStreamFlow();
       notifyListeners();
     }
   }
@@ -136,6 +141,7 @@ class VisualizerController extends ChangeNotifier {
     }
     _stopTimer();
     _playbackState = PlaybackState.paused;
+    _manageStreamFlow();
     notifyListeners();
   }
 
@@ -155,13 +161,36 @@ class VisualizerController extends ChangeNotifier {
   void _tick() {
     if (_currentIndex < _states.length - 1) {
       _currentIndex++;
+      _manageStreamFlow();
       notifyListeners();
     } else if (_algorithm.isStreaming && !_streamDone) {
       // Waiting for more states from the stream — stay playing.
+      _resumeStreamIfNeeded();
     } else {
       _playbackState = PlaybackState.finished;
       _stopTimer();
       notifyListeners();
+    }
+  }
+
+  // -- Stream flow control --
+
+  /// Pause the stream if we've buffered enough ahead, resume if running low.
+  void _manageStreamFlow() {
+    if (!_algorithm.isStreaming || _streamDone) return;
+
+    final buffered = _states.length - 1 - _currentIndex;
+    if (buffered >= _bufferAhead) {
+      _streamSubscription?.pause();
+    } else if (buffered < _bufferAhead ~/ 2) {
+      _resumeStreamIfNeeded();
+    }
+  }
+
+  void _resumeStreamIfNeeded() {
+    if (!_algorithm.isStreaming || _streamDone) return;
+    if (_streamSubscription?.isPaused ?? false) {
+      _streamSubscription?.resume();
     }
   }
 
