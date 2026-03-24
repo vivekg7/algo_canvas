@@ -42,13 +42,13 @@
 
 ## Tree
 
-- [ ] BST Insert / Delete / Search
-- [ ] AVL Tree Rotations
-- [ ] Inorder / Preorder / Postorder Traversal
-- [ ] Level Order Traversal
+- [x] BST Insert / Delete / Search
+- [x] AVL Tree Rotations
+- [x] Inorder / Preorder / Postorder Traversal
+- [x] Level Order Traversal
 - [ ] Red-Black Tree
-- [ ] Heap Operations (Insert / Extract)
-- [ ] Trie Insert / Search
+- [x] Heap Operations (Insert / Extract)
+- [x] Trie Insert / Search
 
 ## Dynamic Programming
 

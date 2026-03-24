@@ -6,6 +6,12 @@ import 'package:algo_canvas/algorithms/dp/knapsack.dart';
 import 'package:algo_canvas/algorithms/dp/lcs.dart';
 import 'package:algo_canvas/algorithms/dp/lis.dart';
 import 'package:algo_canvas/algorithms/dp/matrix_chain.dart';
+import 'package:algo_canvas/algorithms/tree/avl_tree.dart';
+import 'package:algo_canvas/algorithms/tree/bst_operations.dart';
+import 'package:algo_canvas/algorithms/tree/heap_operations.dart';
+import 'package:algo_canvas/algorithms/tree/level_order.dart';
+import 'package:algo_canvas/algorithms/tree/tree_traversals.dart';
+import 'package:algo_canvas/algorithms/tree/trie_operations.dart';
 import 'package:algo_canvas/algorithms/pathfinding/a_star_grid.dart';
 import 'package:algo_canvas/algorithms/pathfinding/maze_gen_backtracker.dart';
 import 'package:algo_canvas/algorithms/pathfinding/maze_gen_prim.dart';
@@ -92,6 +98,15 @@ class AlgorithmRegistry {
     PrimAlgorithm(),
     TopologicalSortAlgorithm(),
     FloydWarshallAlgorithm(),
+    // Tree
+    BstOperationsAlgorithm(),
+    AvlTreeAlgorithm(),
+    InorderTraversalAlgorithm(),
+    PreorderTraversalAlgorithm(),
+    PostorderTraversalAlgorithm(),
+    LevelOrderTraversalAlgorithm(),
+    HeapOperationsAlgorithm(),
+    TrieOperationsAlgorithm(),
     // Pathfinding
     AStarGridAlgorithm(),
     MazeGenBacktrackerAlgorithm(),
