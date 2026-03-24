@@ -102,6 +102,6 @@
 
 ## Compression / Encoding
 
-- [ ] Huffman Coding
-- [ ] Run-Length Encoding
-- [ ] LZW Compression
+- [x] Huffman Coding
+- [x] Run-Length Encoding
+- [x] LZW Compression

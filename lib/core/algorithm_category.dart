@@ -9,7 +9,8 @@ enum AlgorithmCategory {
   physicsSimulation('Physics / Simulation'),
   string('String'),
   computationalGeometry('Computational Geometry'),
-  backtracking('Backtracking');
+  backtracking('Backtracking'),
+  compression('Compression / Encoding');
 
   const AlgorithmCategory(this.label);
   final String label;

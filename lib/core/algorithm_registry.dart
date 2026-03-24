@@ -1,4 +1,7 @@
 import 'package:algo_canvas/core/algorithm.dart';
+import 'package:algo_canvas/algorithms/compression/huffman.dart';
+import 'package:algo_canvas/algorithms/compression/lzw.dart';
+import 'package:algo_canvas/algorithms/compression/rle.dart';
 import 'package:algo_canvas/algorithms/dp/coin_change.dart';
 import 'package:algo_canvas/algorithms/dp/edit_distance.dart';
 import 'package:algo_canvas/algorithms/dp/fibonacci.dart';
@@ -138,6 +141,10 @@ class AlgorithmRegistry {
     EuclideanGcdAlgorithm(),
     NewtonsMethodAlgorithm(),
     MonteCarloPiAlgorithm(),
+    // Compression / Encoding
+    HuffmanAlgorithm(),
+    RleAlgorithm(),
+    LzwAlgorithm(),
   ];
 
   static List<Algorithm> get all => List.unmodifiable(_algorithms);
