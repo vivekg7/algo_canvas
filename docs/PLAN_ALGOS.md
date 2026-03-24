@@ -76,7 +76,7 @@
 - [x] Boids (Flocking)
 - [x] Langton's Ant
 - [x] Double Pendulum
-- [ ] Wave Equation
+- [x] Wave Equation
 
 ## String
 

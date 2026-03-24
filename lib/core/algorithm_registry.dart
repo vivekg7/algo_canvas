@@ -3,6 +3,7 @@ import 'package:algo_canvas/algorithms/backtracking/knights_tour.dart';
 import 'package:algo_canvas/algorithms/backtracking/n_queens.dart';
 import 'package:algo_canvas/algorithms/backtracking/sudoku_solver.dart';
 import 'package:algo_canvas/algorithms/simulation/boids.dart';
+import 'package:algo_canvas/algorithms/simulation/wave_equation.dart';
 import 'package:algo_canvas/algorithms/simulation/double_pendulum.dart';
 import 'package:algo_canvas/algorithms/simulation/game_of_life.dart';
 import 'package:algo_canvas/algorithms/simulation/langtons_ant.dart';
@@ -50,6 +51,7 @@ class AlgorithmRegistry {
     LangtonsAntAlgorithm(),
     DoublePendulumAlgorithm(),
     BoidsAlgorithm(),
+    WaveEquationAlgorithm(),
   ];
 
   static List<Algorithm> get all => List.unmodifiable(_algorithms);
