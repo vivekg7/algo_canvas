@@ -9,6 +9,7 @@ import 'package:algo_canvas/widgets/color_legend.dart';
 
 class FibonacciAlgorithm extends Algorithm {
   int _n = 15;
+  static const _colsPerRow = 10;
 
   @override
   String get name => 'Fibonacci';
@@ -22,61 +23,73 @@ class FibonacciAlgorithm extends Algorithm {
   @override
   Future<List<AlgorithmState>> generate() async {
     final n = _n;
+    final total = n + 1;
+    final cols = _colsPerRow;
+    final rows = (total / cols).ceil();
+    final gridSize = rows * cols;
+
     final states = <DpState>[];
-    final table = List<String>.filled(n + 1, '');
-    final status = List.filled(n + 1, CellStatus.empty);
-    final colLabels = List.generate(n + 1, (i) => '$i');
+    final table = List<String>.filled(gridSize, '');
+    final status = List.filled(gridSize, CellStatus.empty);
+    final colLabels = List.generate(cols, (i) => '$i');
+    final rowLabels = List.generate(rows, (r) => '${r * cols}');
 
-    states.add(DpState(
-      table: List.of(table), cellStatus: List.of(status),
-      rows: 1, cols: n + 1, colLabels: colLabels,
-      description: 'Computing Fibonacci(0) to Fibonacci($n)',
-    ));
-
-    table[0] = '0'; status[0] = CellStatus.computing;
-    states.add(DpState(
-      table: List.of(table), cellStatus: List.of(status),
-      rows: 1, cols: n + 1, colLabels: colLabels, currentRow: 0, currentCol: 0,
-      description: 'F(0) = 0',
-    ));
-    status[0] = CellStatus.filled;
-
-    if (n >= 1) {
-      table[1] = '1'; status[1] = CellStatus.computing;
-      states.add(DpState(
-        table: List.of(table), cellStatus: List.of(status),
-        rows: 1, cols: n + 1, colLabels: colLabels, currentRow: 0, currentCol: 1,
-        description: 'F(1) = 1',
-      ));
-      status[1] = CellStatus.filled;
+    DpState snap(String desc, {int? curRow, int? curCol}) {
+      return DpState(
+        table: List.of(table),
+        cellStatus: List.of(status),
+        rows: rows,
+        cols: cols,
+        colLabels: colLabels,
+        rowLabels: rowLabels,
+        currentRow: curRow,
+        currentCol: curCol,
+        description: desc,
+      );
     }
+
+    states.add(snap('Computing Fibonacci(0) to Fibonacci($n)'));
 
     final fib = List<int>.filled(n + 1, 0);
     fib[0] = 0;
-    if (n >= 1) { fib[1] = 1; }
+    table[0] = '0';
+    status[0] = CellStatus.computing;
+    states.add(snap('F(0) = 0', curRow: 0, curCol: 0));
+    status[0] = CellStatus.filled;
+
+    if (n >= 1) {
+      fib[1] = 1;
+      table[1] = '1';
+      status[1] = CellStatus.computing;
+      states.add(snap('F(1) = 1', curRow: 0, curCol: 1));
+      status[1] = CellStatus.filled;
+    }
 
     for (var i = 2; i <= n; i++) {
       fib[i] = fib[i - 1] + fib[i - 2];
+      final r = i ~/ cols;
+      final c = i % cols;
+
       status[i] = CellStatus.computing;
-      states.add(DpState(
-        table: List.of(table), cellStatus: List.of(status),
-        rows: 1, cols: n + 1, colLabels: colLabels, currentRow: 0, currentCol: i,
-        description: 'F($i) = F(${i - 1}) + F(${i - 2}) = ${fib[i - 1]} + ${fib[i - 2]}',
+      states.add(snap(
+        'F($i) = F(${i - 1}) + F(${i - 2}) = ${fib[i - 1]} + ${fib[i - 2]}',
+        curRow: r, curCol: c,
       ));
 
       table[i] = '${fib[i]}';
       status[i] = CellStatus.filled;
-      states.add(DpState(
-        table: List.of(table), cellStatus: List.of(status),
-        rows: 1, cols: n + 1, colLabels: colLabels, currentRow: 0, currentCol: i,
-        description: 'F($i) = ${fib[i]}',
-      ));
+      states.add(snap('F($i) = ${fib[i]}', curRow: r, curCol: c));
     }
 
     states.add(DpState(
-      table: List.of(table), cellStatus: List.of(status),
-      rows: 1, cols: n + 1, colLabels: colLabels,
-      result: '${fib[n]}', description: 'Fibonacci($n) = ${fib[n]}',
+      table: List.of(table),
+      cellStatus: List.of(status),
+      rows: rows,
+      cols: cols,
+      colLabels: colLabels,
+      rowLabels: rowLabels,
+      result: '${fib[n]}',
+      description: 'Fibonacci($n) = ${fib[n]}',
     ));
 
     return states;
