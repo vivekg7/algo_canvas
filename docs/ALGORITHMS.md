@@ -1,6 +1,6 @@
 # Algorithms
 
-72 algorithms across 12 categories. Checked items are implemented.
+82 algorithms across 14 categories. Checked items are implemented.
 
 ## Sorting
 
@@ -107,3 +107,19 @@
 - [x] Huffman Coding
 - [x] Run-Length Encoding
 - [x] LZW Compression
+
+## Fractals
+
+- [ ] Mandelbrot Set
+- [ ] Julia Set
+- [ ] Sierpinski Triangle
+- [ ] Koch Snowflake
+- [ ] Dragon Curve
+- [ ] Barnsley Fern
+- [ ] Pythagoras Tree
+
+## Space-Filling Curves
+
+- [ ] Hilbert Curve
+- [ ] Peano Curve
+- [ ] Z-Order (Morton) Curve
