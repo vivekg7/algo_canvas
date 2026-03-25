@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:algo_canvas/core/algorithm.dart';
 import 'package:algo_canvas/core/visualizer_controller.dart';
 import 'package:algo_canvas/widgets/color_legend.dart';
@@ -17,6 +18,7 @@ class VisualizerScreen extends StatefulWidget {
 class _VisualizerScreenState extends State<VisualizerScreen> {
   late VisualizerController _controller;
   bool _loading = true;
+  bool _isFullscreen = false;
 
   @override
   void initState() {
@@ -42,15 +44,85 @@ class _VisualizerScreenState extends State<VisualizerScreen> {
     }
   }
 
+  void _enterFullscreen() {
+    setState(() => _isFullscreen = true);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  }
+
+  void _exitFullscreen() {
+    setState(() => _isFullscreen = false);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  }
+
   @override
   void dispose() {
+    if (_isFullscreen) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    }
     _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isFullscreen) return _buildFullscreen(context);
+    return _buildNormal(context);
+  }
+
+  Widget _buildFullscreen(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _exitFullscreen();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: Stack(
+          children: [
+            // Full-bleed canvas
+            Positioned.fill(
+              child: ListenableBuilder(
+                listenable: _controller,
+                builder: (context, _) {
+                  final state = _controller.currentState;
+                  if (state == null) {
+                    return const SizedBox.shrink();
+                  }
+                  return ClipRect(
+                    child: CustomPaint(
+                      painter:
+                          widget.algorithm.createPainter(state, context),
+                      size: Size.infinite,
+                    ),
+                  );
+                },
+              ),
+            ),
+            // Exit button
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 8,
+              right: 8,
+              child: IconButton(
+                icon: const Icon(Icons.fullscreen_exit_rounded),
+                color: colorScheme.onSurface.withValues(alpha: 0.7),
+                style: IconButton.styleFrom(
+                  backgroundColor: colorScheme.surface.withValues(alpha: 0.5),
+                ),
+                onPressed: _exitFullscreen,
+                tooltip: 'Exit fullscreen',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNormal(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isLive = widget.algorithm.mode == AlgorithmMode.live;
 
     return Scaffold(
       appBar: AppBar(
@@ -85,6 +157,14 @@ class _VisualizerScreenState extends State<VisualizerScreen> {
             ),
           ],
         ),
+        actions: [
+          if (isLive)
+            IconButton(
+              icon: const Icon(Icons.fullscreen_rounded),
+              onPressed: _enterFullscreen,
+              tooltip: 'Fullscreen',
+            ),
+        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
