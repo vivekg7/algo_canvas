@@ -27,6 +27,7 @@ class VoronoiState extends AlgorithmState {
 
 class VoronoiAlgorithm extends Algorithm {
   int _siteCount = 15;
+  int _resolution = 80;
 
   @override
   String get name => 'Voronoi Diagram';
@@ -40,7 +41,8 @@ class VoronoiAlgorithm extends Algorithm {
     final random = Random();
     final n = _siteCount;
     final sites = List.generate(n, (_) => (random.nextDouble(), random.nextDouble()));
-    const gridW = 80, gridH = 60;
+    final gridW = _resolution;
+    final gridH = (_resolution * 3 ~/ 4).clamp(30, 200);
 
     // Generate distinct colors
     final colors = List.generate(n, (i) {
@@ -97,7 +99,9 @@ class VoronoiAlgorithm extends Algorithm {
 
   @override
   Widget? buildControls({required VoidCallback onChanged}) =>
-      _Ctrl(count: _siteCount, onChanged: (v) { _siteCount = v; onChanged(); });
+      _Ctrl(count: _siteCount, resolution: _resolution, onChanged: (count, res) {
+        _siteCount = count; _resolution = res; onChanged();
+      });
 }
 
 class _VoronoiPainter extends CustomPainter {
@@ -150,16 +154,35 @@ class _VoronoiPainter extends CustomPainter {
 }
 
 class _Ctrl extends StatefulWidget {
-  const _Ctrl({required this.count, required this.onChanged});
-  final int count; final ValueChanged<int> onChanged;
+  const _Ctrl({required this.count, required this.resolution, required this.onChanged});
+  final int count;
+  final int resolution;
+  final void Function(int count, int resolution) onChanged;
   @override State<_Ctrl> createState() => _CtrlState();
 }
 class _CtrlState extends State<_Ctrl> {
-  late double _v;
-  @override void initState() { super.initState(); _v = widget.count.toDouble(); }
-  @override Widget build(BuildContext context) => Row(children: [
-    Text('Sites: ${_v.round()}', style: Theme.of(context).textTheme.bodySmall),
-    Expanded(child: Slider(value: _v, min: 3, max: 30, divisions: 27,
-      onChanged: (v) => setState(() => _v = v), onChangeEnd: (v) => widget.onChanged(v.round()))),
-  ]);
+  late double _count;
+  late double _res;
+  @override void initState() {
+    super.initState();
+    _count = widget.count.toDouble();
+    _res = widget.resolution.toDouble();
+  }
+  @override Widget build(BuildContext context) {
+    final ts = Theme.of(context).textTheme.bodySmall;
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Row(children: [
+        Text('Sites: ${_count.round()}', style: ts),
+        Expanded(child: Slider(value: _count, min: 3, max: 30, divisions: 27,
+          onChanged: (v) => setState(() => _count = v),
+          onChangeEnd: (v) => widget.onChanged(v.round(), _res.round()))),
+      ]),
+      Row(children: [
+        Text('Resolution: ${_res.round()}', style: ts),
+        Expanded(child: Slider(value: _res, min: 50, max: 500, divisions: 45,
+          onChanged: (v) => setState(() => _res = v),
+          onChangeEnd: (v) => widget.onChanged(_count.round(), v.round()))),
+      ]),
+    ]);
+  }
 }
