@@ -1,10 +1,11 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:algo_canvas/core/algorithm.dart';
 import 'package:algo_canvas/core/algorithm_category.dart';
 import 'package:algo_canvas/core/algorithm_state.dart';
 
 class MandelbrotState extends AlgorithmState {
-  const MandelbrotState({
+  MandelbrotState({
     required this.pixels,
     required this.width,
     required this.height,
@@ -13,11 +14,38 @@ class MandelbrotState extends AlgorithmState {
     required super.description,
   });
 
-  final List<int> pixels; // iteration count per pixel
+  final List<int> pixels;
   final int width;
   final int height;
   final int maxIter;
   final int currentIter;
+
+  // Picture cache
+  ui.Picture? _cachedPicture;
+  Size? _cachedSize;
+
+  ui.Picture getPicture(Size size) {
+    if (_cachedPicture != null && _cachedSize == size) return _cachedPicture!;
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder, Offset.zero & size);
+    final cellW = size.width / width;
+    final cellH = size.height / height;
+    final paint = Paint();
+
+    for (var py = 0; py < height; py++) {
+      for (var px = 0; px < width; px++) {
+        final iter = pixels[py * width + px];
+        paint.color = iter >= maxIter
+            ? Colors.black
+            : HSVColor.fromAHSV(1, (iter / maxIter * 360 * 3) % 360, 0.85, 0.95).toColor();
+        canvas.drawRect(Rect.fromLTWH(px * cellW, py * cellH, cellW + 0.5, cellH + 0.5), paint);
+      }
+    }
+
+    _cachedPicture = recorder.endRecording();
+    _cachedSize = size;
+    return _cachedPicture!;
+  }
 }
 
 class MandelbrotAlgorithm extends Algorithm {
@@ -107,32 +135,11 @@ class _MandelbrotPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final cellW = size.width / state.width;
-    final cellH = size.height / state.height;
-
-    for (var py = 0; py < state.height; py++) {
-      for (var px = 0; px < state.width; px++) {
-        final iter = state.pixels[py * state.width + px];
-        final color = iter >= state.maxIter
-            ? Colors.black
-            : _iterColor(iter, state.maxIter);
-        canvas.drawRect(
-          Rect.fromLTWH(px * cellW, py * cellH, cellW + 0.5, cellH + 0.5),
-          Paint()..color = color,
-        );
-      }
-    }
-  }
-
-  Color _iterColor(int iter, int maxIter) {
-    final t = iter / maxIter;
-    // Smooth HSV coloring
-    final hue = (t * 360 * 3) % 360;
-    return HSVColor.fromAHSV(1, hue, 0.85, 0.95).toColor();
+    canvas.drawPicture(state.getPicture(size));
   }
 
   @override
-  bool shouldRepaint(covariant _MandelbrotPainter old) => old.state != state;
+  bool shouldRepaint(covariant _MandelbrotPainter old) => !identical(old.state, state);
 }
 
 class _Ctrl extends StatefulWidget {

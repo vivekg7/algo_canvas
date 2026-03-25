@@ -67,18 +67,10 @@ class _JuliaPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final cellW = size.width / state.width;
-    final cellH = size.height / state.height;
-    for (var py = 0; py < state.height; py++) {
-      for (var px = 0; px < state.width; px++) {
-        final iter = state.pixels[py * state.width + px];
-        final color = iter >= state.maxIter ? Colors.black
-            : HSVColor.fromAHSV(1, (iter / state.maxIter * 360 * 3) % 360, 0.85, 0.95).toColor();
-        canvas.drawRect(Rect.fromLTWH(px * cellW, py * cellH, cellW + 0.5, cellH + 0.5), Paint()..color = color);
-      }
-    }
+    canvas.drawPicture(state.getPicture(size));
   }
-  @override bool shouldRepaint(covariant _JuliaPainter old) => old.state != state;
+
+  @override bool shouldRepaint(covariant _JuliaPainter old) => !identical(old.state, state);
 }
 
 class _Ctrl extends StatefulWidget {

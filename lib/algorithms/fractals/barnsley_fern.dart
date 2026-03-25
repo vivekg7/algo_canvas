@@ -1,13 +1,25 @@
 import 'dart:math';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:algo_canvas/core/algorithm.dart';
 import 'package:algo_canvas/core/algorithm_category.dart';
 import 'package:algo_canvas/core/algorithm_state.dart';
 
 class BarnsleyFernState extends AlgorithmState {
-  const BarnsleyFernState({required this.points, required this.count, required super.description});
-  final List<(double, double)> points;
-  final int count;
+  BarnsleyFernState({
+    required this.points,
+    required this.count,
+    required this.lastX,
+    required this.lastY,
+    required super.description,
+  });
+
+  /// Interleaved normalized x,y. Pre-allocated to max size.
+  final Float32List points;
+  final int count; // valid point count (points may be larger)
+  final double lastX; // raw x for continuing IFS
+  final double lastY; // raw y for continuing IFS
 }
 
 class BarnsleyFernAlgorithm extends Algorithm {
@@ -19,7 +31,13 @@ class BarnsleyFernAlgorithm extends Algorithm {
   @override AlgorithmMode get mode => AlgorithmMode.live;
 
   @override
-  AlgorithmState createInitialState() => const BarnsleyFernState(points: [], count: 0, description: 'Barnsley Fern');
+  AlgorithmState createInitialState() {
+    return BarnsleyFernState(
+      points: Float32List(_totalPoints * 2),
+      count: 0, lastX: 0, lastY: 0,
+      description: 'Barnsley Fern',
+    );
+  }
 
   @override
   AlgorithmState? tick(AlgorithmState current) {
@@ -27,12 +45,15 @@ class BarnsleyFernAlgorithm extends Algorithm {
     if (s.count >= _totalPoints) return null;
 
     final random = Random();
-    final newPoints = List<(double, double)>.of(s.points);
-    var x = s.points.isEmpty ? 0.0 : s.points.last.$1 * 5.5 - 2.75;
-    var y = s.points.isEmpty ? 0.0 : s.points.last.$2 * 10.0;
 
-    // Generate batch of points
+    // Copy buffer (fast memcpy for typed arrays)
+    final newPts = Float32List(s.points.length);
+    newPts.setRange(0, s.count * 2, s.points);
+
+    var x = s.lastX, y = s.lastY;
     final batch = min(200, _totalPoints - s.count);
+    var offset = s.count * 2;
+
     for (var i = 0; i < batch; i++) {
       final r = random.nextDouble();
       double nx, ny;
@@ -49,13 +70,14 @@ class BarnsleyFernAlgorithm extends Algorithm {
         ny = 0.26 * x + 0.24 * y + 0.44;
       }
       x = nx; y = ny;
-      // Normalize: x is roughly -2.75..2.75, y is 0..10
-      newPoints.add(((x + 2.75) / 5.5, 1.0 - y / 10.0));
+      newPts[offset++] = (x + 2.75) / 5.5;
+      newPts[offset++] = 1.0 - y / 10.0;
     }
 
     final count = s.count + batch;
     return BarnsleyFernState(
-      points: newPoints, count: count,
+      points: newPts, count: count,
+      lastX: x, lastY: y,
       description: '$count points',
     );
   }
@@ -76,18 +98,28 @@ class _FernPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (state.count == 0) return;
     final isDark = brightness == Brightness.dark;
     final color = isDark ? const Color(0xFF4CAF50) : const Color(0xFF2E7D32);
 
-    for (final (x, y) in state.points) {
-      canvas.drawRect(
-        Rect.fromLTWH(x * size.width, y * size.height, 1.5, 1.5),
-        Paint()..color = color,
-      );
+    // Scale points to canvas size
+    final scaled = Float32List(state.count * 2);
+    for (var i = 0; i < state.count * 2; i += 2) {
+      scaled[i] = state.points[i] * size.width;
+      scaled[i + 1] = state.points[i + 1] * size.height;
     }
+
+    canvas.drawRawPoints(
+      ui.PointMode.points,
+      scaled,
+      Paint()
+        ..color = color
+        ..strokeWidth = 1.5
+        ..strokeCap = StrokeCap.square,
+    );
   }
 
-  @override bool shouldRepaint(covariant _FernPainter old) => old.state != state;
+  @override bool shouldRepaint(covariant _FernPainter old) => !identical(old.state, state);
 }
 
 class _Ctrl extends StatefulWidget {

@@ -1,60 +1,71 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:algo_canvas/core/algorithm.dart';
 import 'package:algo_canvas/core/algorithm_category.dart';
 import 'package:algo_canvas/core/algorithm_state.dart';
 
 class SierpinskiState extends AlgorithmState {
-  const SierpinskiState({
-    required this.triangles,
-    required this.depth,
-    required super.description,
-  });
+  SierpinskiState({required this.vertices, required this.depth, required super.description});
 
-  /// List of triangles: each is ((x1,y1), (x2,y2), (x3,y3)) normalized 0..1.
-  final List<((double, double), (double, double), (double, double))> triangles;
+  /// Flat vertex data: [ax, ay, bx, by, cx, cy, ax, ay, bx, by, cx, cy, ...]
+  /// Each triangle = 6 consecutive floats.
+  final Float32List vertices;
   final int depth;
+  int get triangleCount => vertices.length ~/ 6;
+
+  Path? _cachedPath;
+  Size? _cachedSize;
+
+  Path getPath(Size size) {
+    if (_cachedPath != null && _cachedSize == size) return _cachedPath!;
+    final path = Path();
+    for (var i = 0; i < vertices.length; i += 6) {
+      path.moveTo(vertices[i] * size.width, vertices[i + 1] * size.height);
+      path.lineTo(vertices[i + 2] * size.width, vertices[i + 3] * size.height);
+      path.lineTo(vertices[i + 4] * size.width, vertices[i + 5] * size.height);
+      path.close();
+    }
+    _cachedPath = path;
+    _cachedSize = size;
+    return path;
+  }
 }
 
 class SierpinskiAlgorithm extends Algorithm {
   int _maxDepth = 6;
 
-  @override
-  String get name => 'Sierpinski Triangle';
-  @override
-  String get description => 'Recursively remove center triangle at each level. Self-similar fractal.';
-  @override
-  AlgorithmCategory get category => AlgorithmCategory.fractals;
+  @override String get name => 'Sierpinski Triangle';
+  @override String get description => 'Recursively remove center triangle at each level. Self-similar fractal.';
+  @override AlgorithmCategory get category => AlgorithmCategory.fractals;
 
   @override
   Future<List<AlgorithmState>> generate() async {
     final states = <SierpinskiState>[];
 
     for (var depth = 0; depth <= _maxDepth; depth++) {
-      final triangles = <((double, double), (double, double), (double, double))>[];
-      _generate(triangles, (0.5, 0.02), (0.02, 0.98), (0.98, 0.98), depth);
+      final raw = <double>[];
+      _generate(raw, 0.5, 0.02, 0.02, 0.98, 0.98, 0.98, depth);
       states.add(SierpinskiState(
-        triangles: triangles, depth: depth,
-        description: 'Depth $depth: ${triangles.length} triangles',
+        vertices: Float32List.fromList(raw), depth: depth,
+        description: 'Depth $depth: ${raw.length ~/ 6} triangles',
       ));
     }
 
     return states;
   }
 
-  void _generate(
-    List<((double, double), (double, double), (double, double))> out,
-    (double, double) a, (double, double) b, (double, double) c, int depth,
-  ) {
+  void _generate(List<double> out,
+      double ax, double ay, double bx, double by, double cx, double cy, int depth) {
     if (depth == 0) {
-      out.add((a, b, c));
+      out.addAll([ax, ay, bx, by, cx, cy]);
       return;
     }
-    final ab = ((a.$1 + b.$1) / 2, (a.$2 + b.$2) / 2);
-    final bc = ((b.$1 + c.$1) / 2, (b.$2 + c.$2) / 2);
-    final ca = ((c.$1 + a.$1) / 2, (c.$2 + a.$2) / 2);
-    _generate(out, a, ab, ca, depth - 1);
-    _generate(out, ab, b, bc, depth - 1);
-    _generate(out, ca, bc, c, depth - 1);
+    final abx = (ax + bx) / 2, aby = (ay + by) / 2;
+    final bcx = (bx + cx) / 2, bcy = (by + cy) / 2;
+    final cax = (cx + ax) / 2, cay = (cy + ay) / 2;
+    _generate(out, ax, ay, abx, aby, cax, cay, depth - 1);
+    _generate(out, abx, aby, bx, by, bcx, bcy, depth - 1);
+    _generate(out, cax, cay, bcx, bcy, cx, cy, depth - 1);
   }
 
   @override
@@ -75,18 +86,10 @@ class _SierpinskiPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final isDark = brightness == Brightness.dark;
     final color = isDark ? const Color(0xFF42A5F5) : const Color(0xFF1976D2);
-
-    for (final (a, b, c) in state.triangles) {
-      final path = Path()
-        ..moveTo(a.$1 * size.width, a.$2 * size.height)
-        ..lineTo(b.$1 * size.width, b.$2 * size.height)
-        ..lineTo(c.$1 * size.width, c.$2 * size.height)
-        ..close();
-      canvas.drawPath(path, Paint()..color = color);
-    }
+    canvas.drawPath(state.getPath(size), Paint()..color = color);
   }
 
-  @override bool shouldRepaint(covariant _SierpinskiPainter old) => old.state != state;
+  @override bool shouldRepaint(covariant _SierpinskiPainter old) => !identical(old.state, state);
 }
 
 class _Ctrl extends StatefulWidget {

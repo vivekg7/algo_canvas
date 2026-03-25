@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:algo_canvas/core/algorithm.dart';
 import 'package:algo_canvas/core/algorithm_category.dart';
@@ -17,20 +18,19 @@ class PeanoCurveAlgorithm extends Algorithm {
 
     for (var depth = 1; depth <= _maxDepth; depth++) {
       final n = _pow3(depth);
-      final points = <(double, double)>[];
-
-      // Generate Peano curve by visiting grid cells in order
-      _peanoWalk(points, 0, 0, n, n, false, false);
+      final rawPoints = <double>[];
+      _peanoWalk(rawPoints, 0, 0, n, n, false, false);
 
       // Normalize to 0.05..0.95
-      final normalized = points.map((p) => (
-        0.05 + 0.9 * p.$1 / (n - 1),
-        0.05 + 0.9 * p.$2 / (n - 1),
-      )).toList();
+      final pts = Float32List(rawPoints.length);
+      for (var i = 0; i < rawPoints.length; i += 2) {
+        pts[i] = 0.05 + 0.9 * rawPoints[i] / (n - 1);
+        pts[i + 1] = 0.05 + 0.9 * rawPoints[i + 1] / (n - 1);
+      }
 
       states.add(CurveState(
-        points: normalized, depth: depth,
-        description: 'Order $depth: $n×$n grid, ${normalized.length} points',
+        points: pts, depth: depth,
+        description: 'Order $depth: $n×$n grid, ${pts.length ~/ 2} points',
       ));
     }
 
@@ -43,21 +43,17 @@ class PeanoCurveAlgorithm extends Algorithm {
     return r;
   }
 
-  /// Recursive Peano curve walk on a sub-grid.
-  /// Visits all cells in the rectangle [x, x+w) × [y, y+h).
-  /// flipX/flipY control the traversal direction.
-  void _peanoWalk(List<(double, double)> points,
+  void _peanoWalk(List<double> points,
       int x, int y, int w, int h, bool flipX, bool flipY) {
     if (w == 1 && h == 1) {
-      points.add((x.toDouble(), y.toDouble()));
+      points.add(x.toDouble());
+      points.add(y.toDouble());
       return;
     }
 
     final sw = w ~/ 3;
     final sh = h ~/ 3;
 
-    // 9 sub-squares visited in Peano order
-    // The order snakes: column by column, alternating direction
     for (var col = 0; col < 3; col++) {
       final actualCol = flipX ? (2 - col) : col;
       final colFlipY = (col % 2 == 1) != flipY;
@@ -66,14 +62,8 @@ class PeanoCurveAlgorithm extends Algorithm {
         final actualRow = colFlipY ? (2 - row) : row;
         final subFlipX = (row % 2 == 1) != flipX;
 
-        _peanoWalk(
-          points,
-          x + actualCol * sw,
-          y + actualRow * sh,
-          sw, sh,
-          subFlipX,
-          colFlipY,
-        );
+        _peanoWalk(points, x + actualCol * sw, y + actualRow * sh,
+            sw, sh, subFlipX, colFlipY);
       }
     }
   }
@@ -81,7 +71,7 @@ class PeanoCurveAlgorithm extends Algorithm {
   @override
   CustomPainter createPainter(AlgorithmState state, BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return _CurvePainterGeneric(
+    return CurvePainter(
       state: state as CurveState,
       brightness: Theme.of(context).brightness,
       color: isDark ? const Color(0xFFEF5350) : const Color(0xFFD32F2F),
@@ -91,36 +81,6 @@ class PeanoCurveAlgorithm extends Algorithm {
   @override
   Widget? buildControls({required VoidCallback onChanged}) =>
       _Ctrl(depth: _maxDepth, onChanged: (v) { _maxDepth = v; onChanged(); });
-}
-
-class _CurvePainterGeneric extends CustomPainter {
-  _CurvePainterGeneric({required this.state, required this.brightness, required this.color});
-  final CurveState state;
-  final Brightness brightness;
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (state.points.length < 2) return;
-    final path = Path();
-    path.moveTo(state.points[0].$1 * size.width, state.points[0].$2 * size.height);
-    for (var i = 1; i < state.points.length; i++) {
-      path.lineTo(state.points[i].$1 * size.width, state.points[i].$2 * size.height);
-    }
-    canvas.drawPath(path, Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = state.points.length > 500 ? 0.8 : 1.5
-      ..strokeJoin = StrokeJoin.round);
-
-    if (state.points.length <= 81) {
-      for (final (x, y) in state.points) {
-        canvas.drawCircle(Offset(x * size.width, y * size.height), 2, Paint()..color = color);
-      }
-    }
-  }
-
-  @override bool shouldRepaint(covariant _CurvePainterGeneric old) => old.state != state;
 }
 
 class _Ctrl extends StatefulWidget {

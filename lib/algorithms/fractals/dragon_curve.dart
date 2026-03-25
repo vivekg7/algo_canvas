@@ -1,13 +1,31 @@
 import 'dart:math';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:algo_canvas/core/algorithm.dart';
 import 'package:algo_canvas/core/algorithm_category.dart';
 import 'package:algo_canvas/core/algorithm_state.dart';
 
 class DragonCurveState extends AlgorithmState {
-  const DragonCurveState({required this.points, required this.depth, required super.description});
-  final List<(double, double)> points;
+  DragonCurveState({required this.points, required this.depth, required super.description});
+  final Float32List points; // interleaved x,y
   final int depth;
+  int get pointCount => points.length ~/ 2;
+
+  Path? _cachedPath;
+  Size? _cachedSize;
+
+  Path getPath(Size size) {
+    if (_cachedPath != null && _cachedSize == size) return _cachedPath!;
+    final path = Path();
+    if (points.length < 4) return path;
+    path.moveTo(points[0] * size.width, points[1] * size.height);
+    for (var i = 2; i < points.length; i += 2) {
+      path.lineTo(points[i] * size.width, points[i + 1] * size.height);
+    }
+    _cachedPath = path;
+    _cachedSize = size;
+    return path;
+  }
 }
 
 class DragonCurveAlgorithm extends Algorithm {
@@ -20,51 +38,52 @@ class DragonCurveAlgorithm extends Algorithm {
   @override
   Future<List<AlgorithmState>> generate() async {
     final states = <DragonCurveState>[];
+    const dirX = [0.0, 1.0, 0.0, -1.0];
+    const dirY = [-1.0, 0.0, 1.0, 0.0];
 
     for (var depth = 0; depth <= _maxDepth; depth++) {
-      // Generate turns: R=1, L=0
       var turns = <int>[];
       for (var d = 0; d < depth; d++) {
         final newTurns = <int>[];
         newTurns.addAll(turns);
-        newTurns.add(1); // R
+        newTurns.add(1);
         for (var i = turns.length - 1; i >= 0; i--) {
-          newTurns.add(1 - turns[i]); // flip
+          newTurns.add(1 - turns[i]);
         }
         turns = newTurns;
       }
 
-      // Convert turns to points
-      const dirs = [(0.0, -1.0), (1.0, 0.0), (0.0, 1.0), (-1.0, 0.0)]; // up, right, down, left
-      var dir = 1; // start facing right
+      var dir = 1;
       var x = 0.0, y = 0.0;
-      final rawPoints = [(x, y)];
+      final raw = <double>[x, y];
 
       for (final turn in turns) {
         dir = turn == 1 ? (dir + 1) % 4 : (dir + 3) % 4;
-        x += dirs[dir].$1;
-        y += dirs[dir].$2;
-        rawPoints.add((x, y));
+        x += dirX[dir];
+        y += dirY[dir];
+        raw.addAll([x, y]);
       }
 
-      // Normalize to 0..1
-      var minX = rawPoints[0].$1, maxX = rawPoints[0].$1;
-      var minY = rawPoints[0].$2, maxY = rawPoints[0].$2;
-      for (final (px, py) in rawPoints) {
-        if (px < minX) minX = px; if (px > maxX) maxX = px;
-        if (py < minY) minY = py; if (py > maxY) maxY = py;
+      // Normalize
+      var minX = raw[0], maxX = raw[0], minY = raw[1], maxY = raw[1];
+      for (var i = 0; i < raw.length; i += 2) {
+        if (raw[i] < minX) { minX = raw[i]; }
+        if (raw[i] > maxX) { maxX = raw[i]; }
+        if (raw[i + 1] < minY) { minY = raw[i + 1]; }
+        if (raw[i + 1] > maxY) { maxY = raw[i + 1]; }
       }
-      final rangeX = maxX - minX; final rangeY = maxY - minY;
-      final range = max(rangeX, rangeY);
+      final range = max(maxX - minX, maxY - minY);
+      final r = range > 0 ? range : 1.0;
 
-      final points = rawPoints.map((p) => (
-        0.05 + 0.9 * (p.$1 - minX) / (range > 0 ? range : 1),
-        0.05 + 0.9 * (p.$2 - minY) / (range > 0 ? range : 1),
-      )).toList();
+      final pts = Float32List(raw.length);
+      for (var i = 0; i < raw.length; i += 2) {
+        pts[i] = 0.05 + 0.9 * (raw[i] - minX) / r;
+        pts[i + 1] = 0.05 + 0.9 * (raw[i + 1] - minY) / r;
+      }
 
       states.add(DragonCurveState(
-        points: points, depth: depth,
-        description: 'Depth $depth: ${rawPoints.length} points',
+        points: pts, depth: depth,
+        description: 'Depth $depth: ${pts.length ~/ 2} points',
       ));
     }
 
@@ -87,19 +106,14 @@ class _DragonPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (state.points.length < 2) return;
+    if (state.pointCount < 2) return;
     final isDark = brightness == Brightness.dark;
     final color = isDark ? const Color(0xFF4CAF50) : const Color(0xFF388E3C);
-
-    final path = Path();
-    path.moveTo(state.points[0].$1 * size.width, state.points[0].$2 * size.height);
-    for (var i = 1; i < state.points.length; i++) {
-      path.lineTo(state.points[i].$1 * size.width, state.points[i].$2 * size.height);
-    }
-    canvas.drawPath(path, Paint()..color = color..style = PaintingStyle.stroke..strokeWidth = 1.5);
+    canvas.drawPath(state.getPath(size), Paint()
+      ..color = color..style = PaintingStyle.stroke..strokeWidth = 1.5);
   }
 
-  @override bool shouldRepaint(covariant _DragonPainter old) => old.state != state;
+  @override bool shouldRepaint(covariant _DragonPainter old) => !identical(old.state, state);
 }
 
 class _Ctrl extends StatefulWidget {

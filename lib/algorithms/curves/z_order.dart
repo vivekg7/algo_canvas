@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:algo_canvas/core/algorithm.dart';
 import 'package:algo_canvas/core/algorithm_category.dart';
@@ -17,19 +18,18 @@ class ZOrderCurveAlgorithm extends Algorithm {
 
     for (var depth = 1; depth <= _maxDepth; depth++) {
       final n = 1 << depth;
-      final points = <(double, double)>[];
+      final count = n * n;
+      final pts = Float32List(count * 2);
 
-      for (var d = 0; d < n * n; d++) {
+      for (var d = 0; d < count; d++) {
         final (x, y) = _decode(d);
-        points.add((
-          0.05 + 0.9 * x / (n - 1),
-          0.05 + 0.9 * y / (n - 1),
-        ));
+        pts[d * 2] = 0.05 + 0.9 * x / (n - 1);
+        pts[d * 2 + 1] = 0.05 + 0.9 * y / (n - 1);
       }
 
       states.add(CurveState(
-        points: points, depth: depth,
-        description: 'Order $depth: $n×$n grid, ${points.length} points',
+        points: pts, depth: depth,
+        description: 'Order $depth: $n×$n grid, $count points',
       ));
     }
 
@@ -49,8 +49,9 @@ class ZOrderCurveAlgorithm extends Algorithm {
   @override
   CustomPainter createPainter(AlgorithmState state, BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return _ZPainter(
+    return CurvePainter(
       state: state as CurveState,
+      brightness: Theme.of(context).brightness,
       color: isDark ? const Color(0xFFFFCA28) : const Color(0xFFF9A825),
     );
   }
@@ -58,35 +59,6 @@ class ZOrderCurveAlgorithm extends Algorithm {
   @override
   Widget? buildControls({required VoidCallback onChanged}) =>
       _Ctrl(depth: _maxDepth, onChanged: (v) { _maxDepth = v; onChanged(); });
-}
-
-class _ZPainter extends CustomPainter {
-  _ZPainter({required this.state, required this.color});
-  final CurveState state;
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (state.points.length < 2) return;
-    final path = Path();
-    path.moveTo(state.points[0].$1 * size.width, state.points[0].$2 * size.height);
-    for (var i = 1; i < state.points.length; i++) {
-      path.lineTo(state.points[i].$1 * size.width, state.points[i].$2 * size.height);
-    }
-    canvas.drawPath(path, Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = state.points.length > 500 ? 0.8 : 1.5
-      ..strokeJoin = StrokeJoin.round);
-
-    if (state.points.length <= 256) {
-      for (final (x, y) in state.points) {
-        canvas.drawCircle(Offset(x * size.width, y * size.height), 2, Paint()..color = color);
-      }
-    }
-  }
-
-  @override bool shouldRepaint(covariant _ZPainter old) => old.state != state;
 }
 
 class _Ctrl extends StatefulWidget {
