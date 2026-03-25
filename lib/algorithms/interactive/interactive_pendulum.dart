@@ -58,6 +58,31 @@ class InteractivePendulumAlgorithm extends Algorithm {
   }
 
   @override
+  AlgorithmState? tick(AlgorithmState current) {
+    final s = current as PendulumState;
+    if (s.isDragging) return null;
+
+    const dt = 0.016;
+    const g = 9.81;
+    const length = 0.35;
+    const damping = 0.998;
+
+    // Simple pendulum: angular acceleration = -(g/L) * sin(theta)
+    final angAccel = -(g / length) * sin(s.angle);
+    final newVel = (s.angularVelocity + angAccel * dt) * damping;
+    final newAngle = s.angle + newVel * dt;
+
+    // Trail (keep last 200)
+    final trail = List<double>.of(s.trail);
+    trail.add(newAngle);
+    if (trail.length > 200) { trail.removeAt(0); }
+
+    return PendulumState(
+      angle: newAngle, angularVelocity: newVel, trail: trail,
+      description: 'Angle: ${(newAngle * 180 / pi).toStringAsFixed(1)}°');
+  }
+
+  @override
   CustomPainter createPainter(AlgorithmState state, BuildContext context) =>
       _PendulumPainter(state: state as PendulumState, brightness: Theme.of(context).brightness);
 }

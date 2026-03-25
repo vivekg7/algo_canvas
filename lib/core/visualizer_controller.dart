@@ -126,6 +126,7 @@ class VisualizerController extends ChangeNotifier {
         if (initial != null) {
           _interactiveState = initial;
           _playbackState = PlaybackState.paused;
+          _startInteractiveTick();
         }
     }
 
@@ -332,8 +333,12 @@ class VisualizerController extends ChangeNotifier {
 
   // -- Interactive mode --
 
+  bool _interactiveDragging = false;
+
   void handleInteractionStart(Offset normalizedPosition) {
     if (_algorithm.mode != AlgorithmMode.interactive || _interactiveState == null) return;
+    _interactiveDragging = true;
+    _stopInteractiveTick();
     final newState = _algorithm.onInteractionStart(_interactiveState!, normalizedPosition);
     if (newState != null) {
       _interactiveState = newState;
@@ -352,11 +357,41 @@ class VisualizerController extends ChangeNotifier {
 
   void handleInteractionEnd() {
     if (_algorithm.mode != AlgorithmMode.interactive || _interactiveState == null) return;
+    _interactiveDragging = false;
     final newState = _algorithm.onInteractionEnd(_interactiveState!);
     if (newState != null) {
       _interactiveState = newState;
-      notifyListeners();
     }
+    // Start physics tick if algorithm supports it
+    _startInteractiveTick();
+    notifyListeners();
+  }
+
+  Timer? _interactiveTickTimer;
+
+  void _startInteractiveTick() {
+    _stopInteractiveTick();
+    // Only tick if the algorithm implements tick() (returns non-null)
+    if (_interactiveState == null) return;
+    final test = _algorithm.tick(_interactiveState!);
+    if (test == null) return; // Algorithm doesn't support ticking
+
+    _interactiveTickTimer = Timer.periodic(
+      const Duration(milliseconds: 16), // ~60fps
+      (_) {
+        if (_interactiveDragging || _interactiveState == null) return;
+        final next = _algorithm.tick(_interactiveState!);
+        if (next != null) {
+          _interactiveState = next;
+          notifyListeners();
+        }
+      },
+    );
+  }
+
+  void _stopInteractiveTick() {
+    _interactiveTickTimer?.cancel();
+    _interactiveTickTimer = null;
   }
 
   // -- Cleanup --
@@ -364,6 +399,7 @@ class VisualizerController extends ChangeNotifier {
   @override
   void dispose() {
     _stopTimer();
+    _stopInteractiveTick();
     _streamSubscription?.cancel();
     super.dispose();
   }

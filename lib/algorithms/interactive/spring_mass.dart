@@ -85,6 +85,45 @@ class SpringMassAlgorithm extends Algorithm {
   }
 
   @override
+  AlgorithmState? tick(AlgorithmState current) {
+    final s = current as SpringMassState;
+    const dt = 0.016;
+    const stiffness = 15.0;
+    const damping = 0.92;
+    const restLength = 0.15;
+
+    final nodes = List<Offset>.of(s.nodes);
+    final vels = List<Offset>.of(s.velocities);
+    final n = nodes.length;
+
+    // Spring forces
+    for (final (a, b) in s.springs) {
+      final dx = nodes[b].dx - nodes[a].dx;
+      final dy = nodes[b].dy - nodes[a].dy;
+      final dist = sqrt(dx * dx + dy * dy);
+      if (dist < 0.001) continue;
+      final force = stiffness * (dist - restLength);
+      final fx = force * dx / dist * dt;
+      final fy = force * dy / dist * dt;
+      vels[a] = Offset(vels[a].dx + fx, vels[a].dy + fy);
+      vels[b] = Offset(vels[b].dx - fx, vels[b].dy - fy);
+    }
+
+    // Apply damping and update positions
+    for (var i = 0; i < n; i++) {
+      vels[i] = Offset(vels[i].dx * damping, vels[i].dy * damping);
+      nodes[i] = Offset(
+        (nodes[i].dx + vels[i].dx * dt).clamp(0.02, 0.98),
+        (nodes[i].dy + vels[i].dy * dt).clamp(0.02, 0.98),
+      );
+    }
+
+    return SpringMassState(
+      nodes: nodes, velocities: vels, springs: s.springs,
+      description: 'Simulating...');
+  }
+
+  @override
   CustomPainter createPainter(AlgorithmState state, BuildContext context) =>
       _SpringPainter(state: state as SpringMassState, brightness: Theme.of(context).brightness);
 }
