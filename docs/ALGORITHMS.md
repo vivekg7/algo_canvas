@@ -110,16 +110,16 @@
 
 ## Fractals
 
-- [ ] Mandelbrot Set
-- [ ] Julia Set
-- [ ] Sierpinski Triangle
-- [ ] Koch Snowflake
-- [ ] Dragon Curve
-- [ ] Barnsley Fern
-- [ ] Pythagoras Tree
+- [x] Mandelbrot Set
+- [x] Julia Set
+- [x] Sierpinski Triangle
+- [x] Koch Snowflake
+- [x] Dragon Curve
+- [x] Barnsley Fern
+- [x] Pythagoras Tree
 
 ## Space-Filling Curves
 
-- [ ] Hilbert Curve
-- [ ] Peano Curve
-- [ ] Z-Order (Morton) Curve
+- [x] Hilbert Curve
+- [x] Peano Curve
+- [x] Z-Order (Morton) Curve

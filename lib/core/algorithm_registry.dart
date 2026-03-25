@@ -1,4 +1,14 @@
 import 'package:algo_canvas/core/algorithm.dart';
+import 'package:algo_canvas/algorithms/fractals/mandelbrot.dart';
+import 'package:algo_canvas/algorithms/fractals/julia.dart';
+import 'package:algo_canvas/algorithms/fractals/sierpinski.dart';
+import 'package:algo_canvas/algorithms/fractals/koch.dart';
+import 'package:algo_canvas/algorithms/fractals/dragon_curve.dart';
+import 'package:algo_canvas/algorithms/fractals/barnsley_fern.dart';
+import 'package:algo_canvas/algorithms/fractals/pythagoras_tree.dart';
+import 'package:algo_canvas/algorithms/curves/hilbert.dart';
+import 'package:algo_canvas/algorithms/curves/peano.dart';
+import 'package:algo_canvas/algorithms/curves/z_order.dart';
 import 'package:algo_canvas/algorithms/geometry/convex_hull_graham.dart';
 import 'package:algo_canvas/algorithms/geometry/convex_hull_jarvis.dart';
 import 'package:algo_canvas/algorithms/geometry/delaunay.dart';
@@ -156,6 +166,18 @@ class AlgorithmRegistry {
     LineIntersectionAlgorithm(),
     VoronoiAlgorithm(),
     DelaunayAlgorithm(),
+    // Fractals
+    MandelbrotAlgorithm(),
+    JuliaAlgorithm(),
+    SierpinskiAlgorithm(),
+    KochSnowflakeAlgorithm(),
+    DragonCurveAlgorithm(),
+    BarnsleyFernAlgorithm(),
+    PythagorasTreeAlgorithm(),
+    // Space-Filling Curves
+    HilbertCurveAlgorithm(),
+    PeanoCurveAlgorithm(),
+    ZOrderCurveAlgorithm(),
   ];
 
   static List<Algorithm> get all => List.unmodifiable(_algorithms);

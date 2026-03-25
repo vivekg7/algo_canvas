@@ -10,7 +10,9 @@ enum AlgorithmCategory {
   string('String'),
   computationalGeometry('Computational Geometry'),
   backtracking('Backtracking'),
-  compression('Compression / Encoding');
+  compression('Compression / Encoding'),
+  fractals('Fractals'),
+  spaceFillingCurves('Space-Filling Curves');
 
   const AlgorithmCategory(this.label);
   final String label;
