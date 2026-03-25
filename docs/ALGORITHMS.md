@@ -1,6 +1,6 @@
 # Algorithms
 
-89 algorithms across 15 categories. Checked items are implemented.
+90 algorithms across 15 categories. Checked items are implemented.
 
 ## Sorting
 
@@ -133,3 +133,4 @@
 - [x] Interactive Pathfinding (draw walls, place start/end)
 - [x] Spring-Mass System (drag nodes connected by springs)
 - [x] Pendulum (drag to set angle, release to simulate)
+- [x] Double Pendulum (drag either bob, chaotic motion)

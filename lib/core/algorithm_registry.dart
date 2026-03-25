@@ -5,6 +5,7 @@ import 'package:algo_canvas/algorithms/interactive/catmull_rom.dart';
 import 'package:algo_canvas/algorithms/interactive/interactive_convex_hull.dart';
 import 'package:algo_canvas/algorithms/interactive/interactive_pathfinding.dart';
 import 'package:algo_canvas/algorithms/interactive/interactive_pendulum.dart';
+import 'package:algo_canvas/algorithms/interactive/interactive_double_pendulum.dart';
 import 'package:algo_canvas/algorithms/interactive/spring_mass.dart';
 import 'package:algo_canvas/algorithms/fractals/mandelbrot.dart';
 import 'package:algo_canvas/algorithms/fractals/julia.dart';
@@ -193,6 +194,7 @@ class AlgorithmRegistry {
     InteractivePathfindingAlgorithm(),
     SpringMassAlgorithm(),
     InteractivePendulumAlgorithm(),
+    InteractiveDoublePendulumAlgorithm(),
   ];
 
   static List<Algorithm> get all => List.unmodifiable(_algorithms);
