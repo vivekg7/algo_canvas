@@ -1,5 +1,7 @@
 # Plan — Project Setup + Quick Sort Visualizer
 
+> **Historical document.** This was the initial implementation plan used to set up the project foundation. Kept for reference. See [ALGORITHMS.md](ALGORITHMS.md) for current status.
+
 ## Goal
 
 Set up the Flutter project with a strong, extensible foundation and implement Quick Sort as the first visualizer to validate the architecture.

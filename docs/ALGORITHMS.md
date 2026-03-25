@@ -1,4 +1,6 @@
-# Algorithm Implementation Tracker
+# Algorithms
+
+72 algorithms across 12 categories. Checked items are implemented.
 
 ## Sorting
 
@@ -18,7 +20,7 @@
 - [x] Breadth-First Search (BFS)
 - [x] Depth-First Search (DFS)
 - [x] Dijkstra's Shortest Path
-- [x] A* Search
+- [x] A\* Search
 - [x] Bellman-Ford
 - [x] Kruskal's MST
 - [x] Prim's MST
@@ -27,7 +29,7 @@
 
 ## Pathfinding
 
-- [x] A* on Grid
+- [x] A\* on Grid
 - [x] Maze Generation (Recursive Backtracker)
 - [x] Maze Generation (Prim's)
 - [x] Maze Solving (Wall Follower)
