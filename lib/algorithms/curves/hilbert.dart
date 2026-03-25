@@ -66,7 +66,7 @@ class HilbertCurveAlgorithm extends Algorithm {
 
   @override
   Widget? buildControls({required VoidCallback onChanged}) =>
-      _Ctrl(depth: _maxDepth, max: 7, onChanged: (v) { _maxDepth = v; onChanged(); });
+      _Ctrl(depth: _maxDepth, max: 9, onChanged: (v) { _maxDepth = v; onChanged(); });
 }
 
 class _CurvePainter extends CustomPainter {

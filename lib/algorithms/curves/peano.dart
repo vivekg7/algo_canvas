@@ -16,11 +16,13 @@ class PeanoCurveAlgorithm extends Algorithm {
     final states = <CurveState>[];
 
     for (var depth = 1; depth <= _maxDepth; depth++) {
-      final points = <(double, double)>[];
-      _peano(points, 0, 0, 1, 0, 0, 1, depth);
-
-      // Normalize
       final n = _pow3(depth);
+      final points = <(double, double)>[];
+
+      // Generate Peano curve by visiting grid cells in order
+      _peanoWalk(points, 0, 0, n, n, false, false);
+
+      // Normalize to 0.05..0.95
       final normalized = points.map((p) => (
         0.05 + 0.9 * p.$1 / (n - 1),
         0.05 + 0.9 * p.$2 / (n - 1),
@@ -41,25 +43,39 @@ class PeanoCurveAlgorithm extends Algorithm {
     return r;
   }
 
-  void _peano(List<(double, double)> points, double x, double y,
-      double ax, double ay, double bx, double by, int depth) {
-    if (depth == 0) {
-      points.add((x + (ax + bx) / 2, y + (ay + by) / 2));
+  /// Recursive Peano curve walk on a sub-grid.
+  /// Visits all cells in the rectangle [x, x+w) × [y, y+h).
+  /// flipX/flipY control the traversal direction.
+  void _peanoWalk(List<(double, double)> points,
+      int x, int y, int w, int h, bool flipX, bool flipY) {
+    if (w == 1 && h == 1) {
+      points.add((x.toDouble(), y.toDouble()));
       return;
     }
 
-    final dax = ax / 3, day = ay / 3;
-    final dbx = bx / 3, dby = by / 3;
+    final sw = w ~/ 3;
+    final sh = h ~/ 3;
 
-    _peano(points, x, y, dax, day, dbx, dby, depth - 1);
-    _peano(points, x + dax + dbx, y + day + dby, dax, day, -dbx, -dby, depth - 1);
-    _peano(points, x + 2 * dax, y + 2 * day, dax, day, dbx, dby, depth - 1);
-    _peano(points, x + 2 * dax + dbx, y + 2 * day + dby, -dax, -day, dbx, dby, depth - 1);
-    _peano(points, x + dax, y + day, -dax, -day, -dbx, -dby, depth - 1);
-    _peano(points, x + dbx, y + dby, -dax, -day, dbx, dby, depth - 1);
-    _peano(points, x + 2 * dbx, y + 2 * dby, dax, day, dbx, dby, depth - 1);
-    _peano(points, x + dax + 2 * dbx, y + day + 2 * dby, dax, day, -dbx, -dby, depth - 1);
-    _peano(points, x + 2 * dax + 2 * dbx, y + 2 * day + 2 * dby, dax, day, dbx, dby, depth - 1);
+    // 9 sub-squares visited in Peano order
+    // The order snakes: column by column, alternating direction
+    for (var col = 0; col < 3; col++) {
+      final actualCol = flipX ? (2 - col) : col;
+      final colFlipY = (col % 2 == 1) != flipY;
+
+      for (var row = 0; row < 3; row++) {
+        final actualRow = colFlipY ? (2 - row) : row;
+        final subFlipX = (row % 2 == 1) != flipX;
+
+        _peanoWalk(
+          points,
+          x + actualCol * sw,
+          y + actualRow * sh,
+          sw, sh,
+          subFlipX,
+          colFlipY,
+        );
+      }
+    }
   }
 
   @override
