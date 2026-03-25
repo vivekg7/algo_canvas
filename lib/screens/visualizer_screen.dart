@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:algo_canvas/core/algorithm.dart';
 import 'package:algo_canvas/core/visualizer_controller.dart';
 import 'package:algo_canvas/widgets/color_legend.dart';
+import 'package:algo_canvas/widgets/mode_badge.dart';
 import 'package:algo_canvas/widgets/playback_controls.dart';
 
 class VisualizerScreen extends StatefulWidget {
@@ -53,7 +54,37 @@ class _VisualizerScreenState extends State<VisualizerScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.algorithm.name),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(widget.algorithm.name),
+            Row(
+              children: [
+                Text(
+                  widget.algorithm.category.label,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                  decoration: BoxDecoration(
+                    color: modeColor(widget.algorithm.mode, colorScheme),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    modeLabel(widget.algorithm.mode),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: modeTextColor(widget.algorithm.mode, colorScheme),
+                      fontSize: 10,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())

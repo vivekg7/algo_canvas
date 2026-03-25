@@ -1,32 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:algo_canvas/core/algorithm.dart';
-
-String _modeLabel(AlgorithmMode mode) {
-  switch (mode) {
-    case AlgorithmMode.batch: return 'Step-by-step';
-    case AlgorithmMode.streaming: return 'Streaming';
-    case AlgorithmMode.live: return 'Live';
-    case AlgorithmMode.interactive: return 'Interactive';
-  }
-}
-
-Color _modeColor(AlgorithmMode mode, ColorScheme cs) {
-  switch (mode) {
-    case AlgorithmMode.batch: return cs.tertiaryContainer;
-    case AlgorithmMode.streaming: return cs.primaryContainer;
-    case AlgorithmMode.live: return cs.errorContainer;
-    case AlgorithmMode.interactive: return cs.inversePrimary;
-  }
-}
-
-Color _modeTextColor(AlgorithmMode mode, ColorScheme cs) {
-  switch (mode) {
-    case AlgorithmMode.batch: return cs.onTertiaryContainer;
-    case AlgorithmMode.streaming: return cs.onPrimaryContainer;
-    case AlgorithmMode.live: return cs.onErrorContainer;
-    case AlgorithmMode.interactive: return cs.inverseSurface;
-  }
-}
+import 'package:algo_canvas/widgets/mode_badge.dart';
 
 class AlgorithmCard extends StatelessWidget {
   const AlgorithmCard({
@@ -73,13 +47,13 @@ class AlgorithmCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: _modeColor(algorithm.mode, colorScheme),
+                      color: modeColor(algorithm.mode, colorScheme),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      _modeLabel(algorithm.mode),
+                      modeLabel(algorithm.mode),
                       style: textTheme.labelSmall?.copyWith(
-                        color: _modeTextColor(algorithm.mode, colorScheme),
+                        color: modeTextColor(algorithm.mode, colorScheme),
                       ),
                     ),
                   ),
