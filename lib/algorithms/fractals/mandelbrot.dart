@@ -154,7 +154,7 @@ class _CtrlState extends State<_Ctrl> {
       ]),
       Row(children: [
         Text('Resolution: ${_res.round()}', style: ts),
-        Expanded(child: Slider(value: _res, min: 60, max: 300, divisions: 24,
+        Expanded(child: Slider(value: _res, min: 60, max: 500, divisions: 44,
           onChanged: (v) => setState(() => _res = v), onChangeEnd: (v) => widget.onChanged(_iter.round(), v.round()))),
       ]),
     ]);

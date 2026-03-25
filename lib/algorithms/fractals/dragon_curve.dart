@@ -112,7 +112,7 @@ class _CtrlState extends State<_Ctrl> {
   @override void initState() { super.initState(); _v = widget.depth.toDouble(); }
   @override Widget build(BuildContext context) => Row(children: [
     Text('Depth: ${_v.round()}', style: Theme.of(context).textTheme.bodySmall),
-    Expanded(child: Slider(value: _v, min: 0, max: 16, divisions: 16,
+    Expanded(child: Slider(value: _v, min: 0, max: 18, divisions: 18,
       onChanged: (v) => setState(() => _v = v), onChangeEnd: (v) => widget.onChanged(v.round()))),
   ]);
 }

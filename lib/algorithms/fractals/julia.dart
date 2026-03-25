@@ -107,7 +107,7 @@ class _CtrlState extends State<_Ctrl> {
         Expanded(child: Slider(value: _iter, min: 20, max: 200, divisions: 18,
           onChanged: (v) => setState(() => _iter = v), onChangeEnd: (_) => _emit())),
         Text('Res: ${_res.round()}', style: ts),
-        Expanded(child: Slider(value: _res, min: 60, max: 300, divisions: 24,
+        Expanded(child: Slider(value: _res, min: 60, max: 500, divisions: 44,
           onChanged: (v) => setState(() => _res = v), onChangeEnd: (_) => _emit())),
       ]),
     ]);
