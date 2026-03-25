@@ -1,5 +1,11 @@
 import 'package:algo_canvas/core/algorithm.dart';
 import 'package:algo_canvas/algorithms/interactive/bezier_curve.dart';
+import 'package:algo_canvas/algorithms/interactive/b_spline.dart';
+import 'package:algo_canvas/algorithms/interactive/catmull_rom.dart';
+import 'package:algo_canvas/algorithms/interactive/interactive_convex_hull.dart';
+import 'package:algo_canvas/algorithms/interactive/interactive_pathfinding.dart';
+import 'package:algo_canvas/algorithms/interactive/interactive_pendulum.dart';
+import 'package:algo_canvas/algorithms/interactive/spring_mass.dart';
 import 'package:algo_canvas/algorithms/fractals/mandelbrot.dart';
 import 'package:algo_canvas/algorithms/fractals/julia.dart';
 import 'package:algo_canvas/algorithms/fractals/sierpinski.dart';
@@ -181,6 +187,12 @@ class AlgorithmRegistry {
     ZOrderCurveAlgorithm(),
     // Interactive
     BezierCurveAlgorithm(),
+    BSplineAlgorithm(),
+    CatmullRomAlgorithm(),
+    InteractiveConvexHullAlgorithm(),
+    InteractivePathfindingAlgorithm(),
+    SpringMassAlgorithm(),
+    InteractivePendulumAlgorithm(),
   ];
 
   static List<Algorithm> get all => List.unmodifiable(_algorithms);

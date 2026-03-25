@@ -127,9 +127,9 @@
 ## Interactive
 
 - [x] Bezier Curve (drag control points, tap to add)
-- [ ] B-Spline Curve
-- [ ] Catmull-Rom Spline
-- [ ] Interactive Convex Hull (tap to add points)
-- [ ] Interactive Pathfinding (draw walls, place start/end)
-- [ ] Spring-Mass System (drag nodes connected by springs)
-- [ ] Pendulum (drag to set angle, release to simulate)
+- [x] B-Spline Curve
+- [x] Catmull-Rom Spline
+- [x] Interactive Convex Hull (tap to add points)
+- [x] Interactive Pathfinding (draw walls, place start/end)
+- [x] Spring-Mass System (drag nodes connected by springs)
+- [x] Pendulum (drag to set angle, release to simulate)
