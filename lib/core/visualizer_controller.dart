@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:algo_canvas/core/algorithm.dart';
 import 'package:algo_canvas/core/algorithm_state.dart';
@@ -24,6 +25,9 @@ class VisualizerController extends ChangeNotifier {
   int _liveGeneration = 0;
   static const _liveBufferSize = 50;
 
+  // -- Interactive mode state --
+  AlgorithmState? _interactiveState;
+
   // -- Shared state --
   PlaybackState _playbackState = PlaybackState.idle;
   double _speed = 1.0;
@@ -37,6 +41,7 @@ class VisualizerController extends ChangeNotifier {
   bool get isPlaying => _playbackState == PlaybackState.playing;
 
   AlgorithmState? get currentState {
+    if (_algorithm.mode == AlgorithmMode.interactive) return _interactiveState;
     if (_algorithm.mode == AlgorithmMode.live) {
       if (_liveBuffer.isEmpty || _liveBufferIndex < 0) return null;
       return _liveBuffer.elementAt(_liveBufferIndex);
@@ -47,16 +52,19 @@ class VisualizerController extends ChangeNotifier {
   }
 
   int get currentIndex {
+    if (_algorithm.mode == AlgorithmMode.interactive) return 0;
     if (_algorithm.mode == AlgorithmMode.live) return _liveGeneration;
     return _currentIndex;
   }
 
   int get totalSteps {
+    if (_algorithm.mode == AlgorithmMode.interactive) return 0;
     if (_algorithm.mode == AlgorithmMode.live) return _liveGeneration;
     return _states.length;
   }
 
   double get progress {
+    if (_algorithm.mode == AlgorithmMode.interactive) return 0;
     if (_algorithm.mode == AlgorithmMode.live) return 0;
     return _states.length <= 1 ? 0.0 : _currentIndex / (_states.length - 1);
   }
@@ -110,6 +118,13 @@ class VisualizerController extends ChangeNotifier {
         if (initial != null) {
           _liveBuffer.add(initial);
           _liveBufferIndex = 0;
+          _playbackState = PlaybackState.paused;
+        }
+
+      case AlgorithmMode.interactive:
+        final initial = _algorithm.createInitialState();
+        if (initial != null) {
+          _interactiveState = initial;
           _playbackState = PlaybackState.paused;
         }
     }
@@ -192,6 +207,12 @@ class VisualizerController extends ChangeNotifier {
 
   void reset() {
     _stopTimer();
+    if (_algorithm.mode == AlgorithmMode.interactive) {
+      _interactiveState = _algorithm.createInitialState();
+      _playbackState = PlaybackState.paused;
+      notifyListeners();
+      return;
+    }
     if (_algorithm.mode == AlgorithmMode.live) {
       _liveBuffer.clear();
       _liveBufferIndex = -1;
@@ -306,6 +327,35 @@ class VisualizerController extends ChangeNotifier {
     if (_algorithm.mode != AlgorithmMode.streaming || _streamDone) return;
     if (_streamSubscription?.isPaused ?? false) {
       _streamSubscription?.resume();
+    }
+  }
+
+  // -- Interactive mode --
+
+  void handleInteractionStart(Offset normalizedPosition) {
+    if (_algorithm.mode != AlgorithmMode.interactive || _interactiveState == null) return;
+    final newState = _algorithm.onInteractionStart(_interactiveState!, normalizedPosition);
+    if (newState != null) {
+      _interactiveState = newState;
+      notifyListeners();
+    }
+  }
+
+  void handleInteractionUpdate(Offset normalizedPosition) {
+    if (_algorithm.mode != AlgorithmMode.interactive || _interactiveState == null) return;
+    final newState = _algorithm.onInteractionUpdate(_interactiveState!, normalizedPosition);
+    if (newState != null) {
+      _interactiveState = newState;
+      notifyListeners();
+    }
+  }
+
+  void handleInteractionEnd() {
+    if (_algorithm.mode != AlgorithmMode.interactive || _interactiveState == null) return;
+    final newState = _algorithm.onInteractionEnd(_interactiveState!);
+    if (newState != null) {
+      _interactiveState = newState;
+      notifyListeners();
     }
   }
 

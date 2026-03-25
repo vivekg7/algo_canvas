@@ -1,4 +1,5 @@
 import 'package:algo_canvas/core/algorithm.dart';
+import 'package:algo_canvas/algorithms/interactive/bezier_curve.dart';
 import 'package:algo_canvas/algorithms/fractals/mandelbrot.dart';
 import 'package:algo_canvas/algorithms/fractals/julia.dart';
 import 'package:algo_canvas/algorithms/fractals/sierpinski.dart';
@@ -178,6 +179,8 @@ class AlgorithmRegistry {
     HilbertCurveAlgorithm(),
     PeanoCurveAlgorithm(),
     ZOrderCurveAlgorithm(),
+    // Interactive
+    BezierCurveAlgorithm(),
   ];
 
   static List<Algorithm> get all => List.unmodifiable(_algorithms);

@@ -13,6 +13,9 @@ enum AlgorithmMode {
 
   /// Runs indefinitely via [tick]. Rolling buffer of last N states.
   live,
+
+  /// User-driven: state changes in response to gestures on the canvas.
+  interactive,
 }
 
 /// Base class for all algorithm visualizers.
@@ -60,6 +63,21 @@ abstract class Algorithm {
   /// Compute the next state from the current one.
   /// Return null to signal the simulation has ended.
   AlgorithmState? tick(AlgorithmState current) => null;
+
+  // -- Interactive mode --
+
+  /// Handle a pan/drag start on the canvas.
+  /// [localPosition] is in normalized 0..1 coordinates.
+  /// Returns a new state, or null to ignore the event.
+  AlgorithmState? onInteractionStart(
+      AlgorithmState current, Offset localPosition) => null;
+
+  /// Handle a pan/drag update on the canvas.
+  AlgorithmState? onInteractionUpdate(
+      AlgorithmState current, Offset localPosition) => null;
+
+  /// Handle a pan/drag end on the canvas.
+  AlgorithmState? onInteractionEnd(AlgorithmState current) => null;
 
   // -- Shared --
 

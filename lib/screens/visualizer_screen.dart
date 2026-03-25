@@ -90,7 +90,7 @@ class _VisualizerScreenState extends State<VisualizerScreen> {
                       if (state == null) {
                         return const Center(child: Text('No steps generated.'));
                       }
-                      return Padding(
+                      final canvas = Padding(
                         padding: const EdgeInsets.all(16),
                         child: ClipRect(
                           child: CustomPaint(
@@ -98,6 +98,30 @@ class _VisualizerScreenState extends State<VisualizerScreen> {
                             size: Size.infinite,
                           ),
                         ),
+                      );
+                      if (_controller.mode != AlgorithmMode.interactive) {
+                        return canvas;
+                      }
+                      return LayoutBuilder(
+                        builder: (context, constraints) {
+                          return GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onPanStart: (details) {
+                              final norm = _normalizePosition(
+                                  details.localPosition, constraints, 16);
+                              _controller.handleInteractionStart(norm);
+                            },
+                            onPanUpdate: (details) {
+                              final norm = _normalizePosition(
+                                  details.localPosition, constraints, 16);
+                              _controller.handleInteractionUpdate(norm);
+                            },
+                            onPanEnd: (_) {
+                              _controller.handleInteractionEnd();
+                            },
+                            child: canvas,
+                          );
+                        },
                       );
                     },
                   ),
@@ -116,15 +140,27 @@ class _VisualizerScreenState extends State<VisualizerScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: controls,
                   ),
-                // Playback controls
-                SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: PlaybackControls(controller: _controller),
+                // Playback controls (hidden for interactive mode)
+                if (_controller.mode != AlgorithmMode.interactive)
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: PlaybackControls(controller: _controller),
+                    ),
                   ),
-                ),
               ],
             ),
     );
+  }
+
+  /// Convert a local pixel position to normalized 0..1 coordinates
+  /// accounting for padding.
+  Offset _normalizePosition(
+      Offset local, BoxConstraints constraints, double padding) {
+    final x = ((local.dx - padding) / (constraints.maxWidth - padding * 2))
+        .clamp(0.0, 1.0);
+    final y = ((local.dy - padding) / (constraints.maxHeight - padding * 2))
+        .clamp(0.0, 1.0);
+    return Offset(x, y);
   }
 }

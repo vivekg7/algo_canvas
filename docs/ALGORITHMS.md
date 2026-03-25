@@ -1,6 +1,6 @@
 # Algorithms
 
-82 algorithms across 14 categories. Checked items are implemented.
+89 algorithms across 15 categories. Checked items are implemented.
 
 ## Sorting
 
@@ -123,3 +123,13 @@
 - [x] Hilbert Curve
 - [x] Peano Curve
 - [x] Z-Order (Morton) Curve
+
+## Interactive
+
+- [x] Bezier Curve (drag control points, tap to add)
+- [ ] B-Spline Curve
+- [ ] Catmull-Rom Spline
+- [ ] Interactive Convex Hull (tap to add points)
+- [ ] Interactive Pathfinding (draw walls, place start/end)
+- [ ] Spring-Mass System (drag nodes connected by springs)
+- [ ] Pendulum (drag to set angle, release to simulate)
