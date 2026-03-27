@@ -91,7 +91,7 @@ class SelectionSortAlgorithm extends Algorithm {
   CustomPainter createPainter(AlgorithmState state, BuildContext context) {
     return SortingPainter(
       state: state as SortingState,
-      brightness: Theme.of(context).brightness,
+      colorScheme: Theme.of(context).colorScheme,
     );
   }
 

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:algo_canvas/algorithms/geometry/geometry_state.dart';
 
 class GeometryPainter extends CustomPainter {
-  GeometryPainter({required this.state, required this.brightness});
+  GeometryPainter({required this.state, required this.colorScheme});
 
   final GeometryState state;
-  final Brightness brightness;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final isDark = brightness == Brightness.dark;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final padding = 30.0;
     final drawW = size.width - padding * 2;
     final drawH = size.height - padding * 2;
@@ -26,7 +26,7 @@ class GeometryPainter extends CustomPainter {
       }
       path.close();
       canvas.drawPath(path, Paint()
-        ..color = (isDark ? const Color(0xFF42A5F5) : const Color(0xFF1976D2)).withValues(alpha: 0.1)
+        ..color = colorScheme.primary.withValues(alpha: 0.1)
         ..style = PaintingStyle.fill);
     }
 
@@ -70,7 +70,7 @@ class GeometryPainter extends CustomPainter {
       case LineStatus.none:
         return isDark ? Colors.white12 : Colors.black12;
       case LineStatus.testing:
-        return isDark ? const Color(0xFFFFCA28) : const Color(0xFFF9A825);
+        return colorScheme.tertiary;
       case LineStatus.accepted:
         return isDark ? const Color(0xFF4CAF50) : const Color(0xFF388E3C);
       case LineStatus.rejected:
@@ -82,5 +82,5 @@ class GeometryPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant GeometryPainter oldDelegate) =>
-      oldDelegate.state != state;
+      oldDelegate.state != state || oldDelegate.colorScheme != colorScheme;
 }

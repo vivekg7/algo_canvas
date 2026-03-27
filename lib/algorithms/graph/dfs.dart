@@ -106,7 +106,7 @@ class DfsAlgorithm extends Algorithm {
 
   @override
   CustomPainter createPainter(AlgorithmState state, BuildContext context) {
-    return GraphPainter(state: state as GraphState, brightness: Theme.of(context).brightness);
+    return GraphPainter(state: state as GraphState, colorScheme: Theme.of(context).colorScheme);
   }
 
   @override

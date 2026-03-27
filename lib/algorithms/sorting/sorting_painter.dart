@@ -4,11 +4,11 @@ import 'package:algo_canvas/algorithms/sorting/sorting_state.dart';
 class SortingPainter extends CustomPainter {
   SortingPainter({
     required this.state,
-    required this.brightness,
+    required this.colorScheme,
   });
 
   final SortingState state;
-  final Brightness brightness;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -21,6 +21,7 @@ class SortingPainter extends CustomPainter {
     final barWidth = size.width / array.length;
     final showLabels = array.length <= 30 && barWidth >= 14;
     final barMaxHeight = size.height - (showLabels ? 16 : 0);
+    final isDark = colorScheme.brightness == Brightness.dark;
 
     for (var i = 0; i < array.length; i++) {
       final barHeight = (array[i] / maxVal) * barMaxHeight;
@@ -32,7 +33,7 @@ class SortingPainter extends CustomPainter {
       );
 
       final paint = Paint()
-        ..color = _colorForIndex(i)
+        ..color = _colorForIndex(i, isDark)
         ..style = PaintingStyle.fill;
 
       canvas.drawRRect(
@@ -51,9 +52,7 @@ class SortingPainter extends CustomPainter {
             text: '${array[i]}',
             style: TextStyle(
               fontSize: (barWidth * 0.4).clamp(7, 11),
-              color: brightness == Brightness.dark
-                  ? Colors.white54
-                  : Colors.black54,
+              color: isDark ? Colors.white54 : Colors.black54,
             ),
           ),
           textDirection: TextDirection.ltr,
@@ -69,9 +68,7 @@ class SortingPainter extends CustomPainter {
     }
   }
 
-  Color _colorForIndex(int index) {
-    final isDark = brightness == Brightness.dark;
-
+  Color _colorForIndex(int index, bool isDark) {
     if (state.sorted.contains(index)) {
       return isDark
           ? const Color(0xFF4CAF50)
@@ -83,14 +80,10 @@ class SortingPainter extends CustomPainter {
           : const Color(0xFFD32F2F);
     }
     if (state.pivot != null && state.pivot == index) {
-      return isDark
-          ? const Color(0xFFFFCA28)
-          : const Color(0xFFF9A825);
+      return colorScheme.tertiary;
     }
     if (state.comparing.contains(index)) {
-      return isDark
-          ? const Color(0xFF42A5F5)
-          : const Color(0xFF1976D2);
+      return colorScheme.primary;
     }
     // Default bar color
     return isDark
@@ -100,6 +93,6 @@ class SortingPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant SortingPainter oldDelegate) {
-    return oldDelegate.state != state;
+    return oldDelegate.state != state || oldDelegate.colorScheme != colorScheme;
   }
 }

@@ -238,16 +238,16 @@ class SudokuSolverAlgorithm extends Algorithm {
   CustomPainter createPainter(AlgorithmState state, BuildContext context) {
     return _SudokuPainter(
       state: state as SudokuState,
-      brightness: Theme.of(context).brightness,
+      colorScheme: Theme.of(context).colorScheme,
     );
   }
 }
 
 class _SudokuPainter extends CustomPainter {
-  _SudokuPainter({required this.state, required this.brightness});
+  _SudokuPainter({required this.state, required this.colorScheme});
 
   final SudokuState state;
-  final Brightness brightness;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -256,21 +256,17 @@ class _SudokuPainter extends CustomPainter {
     final offsetX = (size.width - boardSize) / 2;
     final offsetY = (size.height - boardSize) / 2;
 
-    final isDark = brightness == Brightness.dark;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final bgColor = isDark ? const Color(0xFF303030) : Colors.white;
     final givenColor = isDark ? Colors.white : Colors.black;
     final placedColor = isDark
         ? const Color(0xFF4CAF50)
         : const Color(0xFF388E3C);
-    final tryingColor = isDark
-        ? const Color(0xFF42A5F5)
-        : const Color(0xFF1976D2);
+    final tryingColor = colorScheme.primary;
     final conflictColor = isDark
         ? const Color(0xFFEF5350)
         : const Color(0xFFD32F2F);
-    final solvedColor = isDark
-        ? const Color(0xFFFFCA28)
-        : const Color(0xFFF9A825);
+    final solvedColor = colorScheme.tertiary;
 
     // Background
     canvas.drawRect(
@@ -381,6 +377,6 @@ class _SudokuPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _SudokuPainter oldDelegate) {
-    return oldDelegate.state != state;
+    return oldDelegate.state != state || oldDelegate.colorScheme != colorScheme;
   }
 }

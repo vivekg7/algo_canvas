@@ -3,9 +3,10 @@ import 'package:algo_canvas/widgets/color_legend.dart';
 
 List<LegendItem> stringLegend(BuildContext context) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
+  final colorScheme = Theme.of(context).colorScheme;
   return [
-    LegendItem(isDark ? const Color(0xFFFFCA28) : const Color(0xFFF9A825), 'Current'),
-    LegendItem(isDark ? const Color(0xFF42A5F5) : const Color(0xFF1976D2), 'Matching'),
+    LegendItem(colorScheme.tertiary, 'Current'),
+    LegendItem(colorScheme.primary, 'Matching'),
     LegendItem(isDark ? const Color(0xFFEF5350) : const Color(0xFFD32F2F), 'Mismatch'),
     LegendItem(isDark ? const Color(0xFF4CAF50) : const Color(0xFF388E3C), 'Found'),
   ];

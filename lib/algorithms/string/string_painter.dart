@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:algo_canvas/algorithms/string/string_state.dart';
 
 class StringMatchPainter extends CustomPainter {
-  StringMatchPainter({required this.state, required this.brightness});
+  StringMatchPainter({required this.state, required this.colorScheme});
 
   final StringMatchState state;
-  final Brightness brightness;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final isDark = brightness == Brightness.dark;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final text = state.text;
     final pattern = state.pattern;
     final cellSize = min(size.width / (text.length + 1), 32.0).clamp(14.0, 32.0);
@@ -125,13 +125,9 @@ class StringMatchPainter extends CustomPainter {
       case CharStatus.normal:
         return isDark ? const Color(0xFF2A2A2A) : const Color(0xFFF5F5F5);
       case CharStatus.current:
-        return isDark
-            ? const Color(0xFFFFCA28).withValues(alpha: 0.4)
-            : const Color(0xFFF9A825).withValues(alpha: 0.3);
+        return colorScheme.tertiary.withValues(alpha: isDark ? 0.4 : 0.3);
       case CharStatus.matching:
-        return isDark
-            ? const Color(0xFF42A5F5).withValues(alpha: 0.4)
-            : const Color(0xFF1976D2).withValues(alpha: 0.3);
+        return colorScheme.primary.withValues(alpha: isDark ? 0.4 : 0.3);
       case CharStatus.mismatched:
         return isDark
             ? const Color(0xFFEF5350).withValues(alpha: 0.4)
@@ -145,6 +141,6 @@ class StringMatchPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant StringMatchPainter oldDelegate) {
-    return oldDelegate.state != state;
+    return oldDelegate.state != state || oldDelegate.colorScheme != colorScheme;
   }
 }

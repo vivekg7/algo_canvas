@@ -106,7 +106,7 @@ class MazeGenBacktrackerAlgorithm extends Algorithm {
 
   @override
   CustomPainter createPainter(AlgorithmState state, BuildContext context) =>
-      GridPainter(state: state as GridState, brightness: Theme.of(context).brightness);
+      GridPainter(state: state as GridState, colorScheme: Theme.of(context).colorScheme);
 
   @override
   List<LegendItem>? buildLegend(BuildContext context) => mazeLegend(context);

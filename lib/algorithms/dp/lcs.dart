@@ -102,7 +102,7 @@ class LcsAlgorithm extends Algorithm {
 
   @override
   CustomPainter createPainter(AlgorithmState state, BuildContext context) =>
-      DpPainter(state: state as DpState, brightness: Theme.of(context).brightness);
+      DpPainter(state: state as DpState, colorScheme: Theme.of(context).colorScheme);
 
   @override
   List<LegendItem>? buildLegend(BuildContext context) => dpLegend(context);

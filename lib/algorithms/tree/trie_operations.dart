@@ -168,7 +168,7 @@ class TrieOperationsAlgorithm extends Algorithm {
 
   @override
   CustomPainter createPainter(AlgorithmState state, BuildContext context) =>
-      TreePainter(state: state as TreeState, brightness: Theme.of(context).brightness);
+      TreePainter(state: state as TreeState, colorScheme: Theme.of(context).colorScheme);
 
   @override
   List<LegendItem>? buildLegend(BuildContext context) => treeLegend(context);

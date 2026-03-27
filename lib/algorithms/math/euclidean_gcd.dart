@@ -90,7 +90,7 @@ class EuclideanGcdAlgorithm extends Algorithm {
   CustomPainter createPainter(AlgorithmState state, BuildContext context) {
     return _GcdPainter(
       state: state as GcdState,
-      brightness: Theme.of(context).brightness,
+      colorScheme: Theme.of(context).colorScheme,
     );
   }
 
@@ -109,17 +109,17 @@ class EuclideanGcdAlgorithm extends Algorithm {
 }
 
 class _GcdPainter extends CustomPainter {
-  _GcdPainter({required this.state, required this.brightness});
+  _GcdPainter({required this.state, required this.colorScheme});
 
   final GcdState state;
-  final Brightness brightness;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final isDark = brightness == Brightness.dark;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : Colors.black;
     final dimColor = isDark ? Colors.white54 : Colors.black54;
-    final accentColor = isDark ? const Color(0xFF42A5F5) : const Color(0xFF1976D2);
+    final accentColor = colorScheme.primary;
     final resultColor = isDark ? const Color(0xFF4CAF50) : const Color(0xFF388E3C);
     final dividerColor = isDark ? Colors.white12 : Colors.black12;
 
@@ -303,7 +303,7 @@ class _GcdPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _GcdPainter oldDelegate) {
-    return oldDelegate.state != state;
+    return oldDelegate.state != state || oldDelegate.colorScheme != colorScheme;
   }
 }
 

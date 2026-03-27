@@ -77,7 +77,7 @@ class ConvexHullJarvisAlgorithm extends Algorithm {
 
   @override
   CustomPainter createPainter(AlgorithmState state, BuildContext context) =>
-      GeometryPainter(state: state as GeometryState, brightness: Theme.of(context).brightness);
+      GeometryPainter(state: state as GeometryState, colorScheme: Theme.of(context).colorScheme);
 
   @override
   List<LegendItem>? buildLegend(BuildContext context) => geometryLegend(context);

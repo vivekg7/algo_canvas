@@ -115,7 +115,7 @@ class BfsAlgorithm extends Algorithm {
   CustomPainter createPainter(AlgorithmState state, BuildContext context) {
     return GraphPainter(
       state: state as GraphState,
-      brightness: Theme.of(context).brightness,
+      colorScheme: Theme.of(context).colorScheme,
     );
   }
 

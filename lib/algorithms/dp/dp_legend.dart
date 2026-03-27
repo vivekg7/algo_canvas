@@ -3,13 +3,14 @@ import 'package:algo_canvas/widgets/color_legend.dart';
 
 List<LegendItem> dpLegend(BuildContext context) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
+  final colorScheme = Theme.of(context).colorScheme;
   return [
     LegendItem(
-      isDark ? const Color(0xFFFFCA28) : const Color(0xFFF9A825),
+      colorScheme.tertiary,
       'Computing',
     ),
     LegendItem(
-      isDark ? const Color(0xFF42A5F5) : const Color(0xFF1976D2),
+      colorScheme.primary,
       'Filled',
     ),
     LegendItem(

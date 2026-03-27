@@ -4,11 +4,11 @@ import 'package:algo_canvas/algorithms/searching/searching_state.dart';
 class SearchingPainter extends CustomPainter {
   SearchingPainter({
     required this.state,
-    required this.brightness,
+    required this.colorScheme,
   });
 
   final SearchingState state;
-  final Brightness brightness;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -18,6 +18,7 @@ class SearchingPainter extends CustomPainter {
     final maxVal = array.reduce((a, b) => a > b ? a : b);
     if (maxVal == 0) return;
 
+    final isDark = colorScheme.brightness == Brightness.dark;
     final barWidth = size.width / array.length;
     final barMaxHeight = size.height - 24; // Leave room for target line label
 
@@ -58,7 +59,7 @@ class SearchingPainter extends CustomPainter {
       );
 
       final paint = Paint()
-        ..color = _colorForIndex(i)
+        ..color = _colorForIndex(i, isDark)
         ..style = PaintingStyle.fill;
 
       canvas.drawRRect(
@@ -73,14 +74,10 @@ class SearchingPainter extends CustomPainter {
   }
 
   Color _targetColor() {
-    return brightness == Brightness.dark
-        ? const Color(0xFFFFCA28)
-        : const Color(0xFFF9A825);
+    return colorScheme.tertiary;
   }
 
-  Color _colorForIndex(int index) {
-    final isDark = brightness == Brightness.dark;
-
+  Color _colorForIndex(int index, bool isDark) {
     // Found
     if (state.found != null && state.found == index) {
       return isDark
@@ -107,9 +104,7 @@ class SearchingPainter extends CustomPainter {
         state.rangeEnd != null &&
         index >= state.rangeStart! &&
         index <= state.rangeEnd!) {
-      return isDark
-          ? const Color(0xFF42A5F5)
-          : const Color(0xFF1976D2);
+      return colorScheme.primary;
     }
 
     // Default
@@ -120,6 +115,6 @@ class SearchingPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant SearchingPainter oldDelegate) {
-    return oldDelegate.state != state;
+    return oldDelegate.state != state || oldDelegate.colorScheme != colorScheme;
   }
 }

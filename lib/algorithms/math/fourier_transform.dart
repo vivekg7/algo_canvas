@@ -111,7 +111,7 @@ class FourierTransformAlgorithm extends Algorithm {
   CustomPainter createPainter(AlgorithmState state, BuildContext context) {
     return _FourierPainter(
       state: state as FourierState,
-      brightness: Theme.of(context).brightness,
+      colorScheme: Theme.of(context).colorScheme,
     );
   }
 
@@ -128,17 +128,17 @@ class FourierTransformAlgorithm extends Algorithm {
 }
 
 class _FourierPainter extends CustomPainter {
-  _FourierPainter({required this.state, required this.brightness});
+  _FourierPainter({required this.state, required this.colorScheme});
 
   final FourierState state;
-  final Brightness brightness;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final isDark = brightness == Brightness.dark;
-    final signalColor = isDark ? const Color(0xFF42A5F5) : const Color(0xFF1976D2);
+    final isDark = colorScheme.brightness == Brightness.dark;
+    final signalColor = colorScheme.primary;
     final freqColor = isDark ? const Color(0xFF66BB6A) : const Color(0xFF388E3C);
-    final peakColor = isDark ? const Color(0xFFFFCA28) : const Color(0xFFF9A825);
+    final peakColor = colorScheme.tertiary;
     final currentColor = isDark ? const Color(0xFFEF5350) : const Color(0xFFD32F2F);
     final axisColor = isDark ? Colors.white24 : Colors.black26;
     final textColor = isDark ? Colors.white70 : Colors.black54;
@@ -245,7 +245,7 @@ class _FourierPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _FourierPainter oldDelegate) {
-    return oldDelegate.state != state;
+    return oldDelegate.state != state || oldDelegate.colorScheme != colorScheme;
   }
 }
 

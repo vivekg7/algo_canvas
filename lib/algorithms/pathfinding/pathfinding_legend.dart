@@ -3,9 +3,10 @@ import 'package:algo_canvas/widgets/color_legend.dart';
 
 List<LegendItem> pathfindingLegend(BuildContext context) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
+  final colorScheme = Theme.of(context).colorScheme;
   return [
     LegendItem(
-      isDark ? const Color(0xFF42A5F5) : const Color(0xFF1976D2),
+      colorScheme.primary,
       'Start',
     ),
     LegendItem(
@@ -17,7 +18,7 @@ List<LegendItem> pathfindingLegend(BuildContext context) {
       'Wall',
     ),
     LegendItem(
-      isDark ? const Color(0xFFFFCA28) : const Color(0xFFF9A825),
+      colorScheme.tertiary,
       'Queued',
     ),
     LegendItem(
@@ -29,6 +30,7 @@ List<LegendItem> pathfindingLegend(BuildContext context) {
 
 List<LegendItem> mazeLegend(BuildContext context) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
+  final colorScheme = Theme.of(context).colorScheme;
   return [
     LegendItem(
       isDark ? const Color(0xFF2A2A2A) : const Color(0xFFF5F5F5),
@@ -43,7 +45,7 @@ List<LegendItem> mazeLegend(BuildContext context) {
       'Path',
     ),
     LegendItem(
-      isDark ? const Color(0xFFFFCA28) : const Color(0xFFF9A825),
+      colorScheme.tertiary,
       'Current',
     ),
   ];

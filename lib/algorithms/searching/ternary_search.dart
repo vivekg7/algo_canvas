@@ -154,7 +154,7 @@ class TernarySearchAlgorithm extends Algorithm {
   CustomPainter createPainter(AlgorithmState state, BuildContext context) {
     return SearchingPainter(
       state: state as SearchingState,
-      brightness: Theme.of(context).brightness,
+      colorScheme: Theme.of(context).colorScheme,
     );
   }
 

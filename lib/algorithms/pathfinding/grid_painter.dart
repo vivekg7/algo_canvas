@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:algo_canvas/algorithms/pathfinding/grid_state.dart';
 
 class GridPainter extends CustomPainter {
-  GridPainter({required this.state, required this.brightness});
+  GridPainter({required this.state, required this.colorScheme});
 
   final GridState state;
-  final Brightness brightness;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -18,7 +18,7 @@ class GridPainter extends CustomPainter {
     final offsetX = (size.width - cellSize * cols) / 2;
     final offsetY = (size.height - cellSize * rows) / 2;
 
-    final isDark = brightness == Brightness.dark;
+    final isDark = colorScheme.brightness == Brightness.dark;
 
     for (var r = 0; r < rows; r++) {
       for (var c = 0; c < cols; c++) {
@@ -51,17 +51,13 @@ class GridPainter extends CustomPainter {
       case TileType.wall:
         return isDark ? const Color(0xFF616161) : const Color(0xFF424242);
       case TileType.start:
-        return isDark ? const Color(0xFF42A5F5) : const Color(0xFF1976D2);
+        return colorScheme.primary;
       case TileType.end:
         return isDark ? const Color(0xFFAB47BC) : const Color(0xFF7B1FA2);
       case TileType.visited:
-        return isDark
-            ? const Color(0xFF42A5F5).withValues(alpha: 0.25)
-            : const Color(0xFF1976D2).withValues(alpha: 0.2);
+        return colorScheme.primary.withValues(alpha: isDark ? 0.25 : 0.2);
       case TileType.queued:
-        return isDark
-            ? const Color(0xFFFFCA28).withValues(alpha: 0.4)
-            : const Color(0xFFF9A825).withValues(alpha: 0.3);
+        return colorScheme.tertiary.withValues(alpha: isDark ? 0.4 : 0.3);
       case TileType.path:
         return isDark ? const Color(0xFF4CAF50) : const Color(0xFF388E3C);
     }
@@ -69,6 +65,6 @@ class GridPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant GridPainter oldDelegate) {
-    return oldDelegate.state != state;
+    return oldDelegate.state != state || oldDelegate.colorScheme != colorScheme;
   }
 }

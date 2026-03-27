@@ -94,22 +94,22 @@ class LzwAlgorithm extends Algorithm {
 
   @override
   CustomPainter createPainter(AlgorithmState state, BuildContext context) =>
-      _LzwPainter(state: state as LzwState, brightness: Theme.of(context).brightness);
+      _LzwPainter(state: state as LzwState, colorScheme: Theme.of(context).colorScheme);
 }
 
 class _LzwPainter extends CustomPainter {
-  _LzwPainter({required this.state, required this.brightness});
+  _LzwPainter({required this.state, required this.colorScheme});
 
   final LzwState state;
-  final Brightness brightness;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final isDark = brightness == Brightness.dark;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : Colors.black;
     final dimColor = isDark ? Colors.white54 : Colors.black54;
-    final accentColor = isDark ? const Color(0xFF42A5F5) : const Color(0xFF1976D2);
-    final highlightColor = isDark ? const Color(0xFFFFCA28) : const Color(0xFFF9A825);
+    final accentColor = colorScheme.primary;
+    final highlightColor = colorScheme.tertiary;
     final successColor = isDark ? const Color(0xFF4CAF50) : const Color(0xFF388E3C);
 
     var y = 16.0;
@@ -184,5 +184,5 @@ class _LzwPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _LzwPainter oldDelegate) => oldDelegate.state != state;
+  bool shouldRepaint(covariant _LzwPainter oldDelegate) => oldDelegate.state != state || oldDelegate.colorScheme != colorScheme;
 }

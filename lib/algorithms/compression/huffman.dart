@@ -152,23 +152,23 @@ class HuffmanAlgorithm extends Algorithm {
 
   @override
   CustomPainter createPainter(AlgorithmState state, BuildContext context) =>
-      _HuffmanPainter(state: state as HuffmanState, brightness: Theme.of(context).brightness);
+      _HuffmanPainter(state: state as HuffmanState, colorScheme: Theme.of(context).colorScheme);
 }
 
 class _HuffmanPainter extends CustomPainter {
-  _HuffmanPainter({required this.state, required this.brightness});
+  _HuffmanPainter({required this.state, required this.colorScheme});
 
   final HuffmanState state;
-  final Brightness brightness;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final isDark = brightness == Brightness.dark;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : Colors.black;
     final dimColor = isDark ? Colors.white54 : Colors.black54;
     final nodeColor = isDark ? const Color(0xFF424242) : const Color(0xFFE0E0E0);
-    final leafColor = isDark ? const Color(0xFF42A5F5) : const Color(0xFF1976D2);
-    final highlightColor = isDark ? const Color(0xFFFFCA28) : const Color(0xFFF9A825);
+    final leafColor = colorScheme.primary;
+    final highlightColor = colorScheme.tertiary;
     final edgeColor = isDark ? Colors.white24 : Colors.black26;
 
     // Tree (top 60%)
@@ -242,5 +242,5 @@ class _HuffmanPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _HuffmanPainter oldDelegate) => oldDelegate.state != state;
+  bool shouldRepaint(covariant _HuffmanPainter oldDelegate) => oldDelegate.state != state || oldDelegate.colorScheme != colorScheme;
 }

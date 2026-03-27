@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:algo_canvas/algorithms/dp/dp_state.dart';
 
 class DpPainter extends CustomPainter {
-  DpPainter({required this.state, required this.brightness});
+  DpPainter({required this.state, required this.colorScheme});
 
   final DpState state;
-  final Brightness brightness;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final isDark = brightness == Brightness.dark;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final rows = state.rows;
     final cols = state.cols;
     final hasRowLabels = state.rowLabels != null;
@@ -32,8 +32,8 @@ class DpPainter extends CustomPainter {
         (hasColLabels ? labelOffset : 0);
 
     final emptyColor = isDark ? const Color(0xFF2A2A2A) : const Color(0xFFF5F5F5);
-    final computingColor = isDark ? const Color(0xFFFFCA28) : const Color(0xFFF9A825);
-    final filledColor = isDark ? const Color(0xFF42A5F5) : const Color(0xFF1976D2);
+    final computingColor = colorScheme.tertiary;
+    final filledColor = colorScheme.primary;
     final pathColor = isDark ? const Color(0xFF4CAF50) : const Color(0xFF388E3C);
     final textColor = isDark ? Colors.white : Colors.black;
     final dimText = isDark ? Colors.white38 : Colors.black38;
@@ -135,6 +135,6 @@ class DpPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant DpPainter oldDelegate) {
-    return oldDelegate.state != state;
+    return oldDelegate.state != state || oldDelegate.colorScheme != colorScheme;
   }
 }

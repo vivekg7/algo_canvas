@@ -95,7 +95,7 @@ class NewtonsMethodAlgorithm extends Algorithm {
   CustomPainter createPainter(AlgorithmState state, BuildContext context) {
     return _NewtonsPainter(
       state: state as NewtonsMethodState,
-      brightness: Theme.of(context).brightness,
+      colorScheme: Theme.of(context).colorScheme,
     );
   }
 
@@ -112,19 +112,17 @@ class NewtonsMethodAlgorithm extends Algorithm {
 }
 
 class _NewtonsPainter extends CustomPainter {
-  _NewtonsPainter({required this.state, required this.brightness});
+  _NewtonsPainter({required this.state, required this.colorScheme});
 
   final NewtonsMethodState state;
-  final Brightness brightness;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final isDark = brightness == Brightness.dark;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final axisColor = isDark ? Colors.white24 : Colors.black26;
-    final curveColor = isDark ? const Color(0xFF42A5F5) : const Color(0xFF1976D2);
-    final tangentColor = isDark
-        ? const Color(0xFFFFCA28).withValues(alpha: 0.7)
-        : const Color(0xFFF9A825).withValues(alpha: 0.7);
+    final curveColor = colorScheme.primary;
+    final tangentColor = colorScheme.tertiary.withValues(alpha: 0.7);
     final pointColor = isDark ? const Color(0xFFEF5350) : const Color(0xFFD32F2F);
     final rootColor = isDark ? const Color(0xFF4CAF50) : const Color(0xFF388E3C);
 
@@ -229,7 +227,7 @@ class _NewtonsPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _NewtonsPainter oldDelegate) {
-    return oldDelegate.state != state;
+    return oldDelegate.state != state || oldDelegate.colorScheme != colorScheme;
   }
 }
 

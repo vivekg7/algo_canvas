@@ -5,15 +5,15 @@ import 'package:algo_canvas/algorithms/graph/graph_state.dart';
 class GraphPainter extends CustomPainter {
   GraphPainter({
     required this.state,
-    required this.brightness,
+    required this.colorScheme,
   });
 
   final GraphState state;
-  final Brightness brightness;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final isDark = brightness == Brightness.dark;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final padding = 30.0;
     final drawW = size.width - padding * 2;
     final drawH = size.height - padding * 2;
@@ -169,13 +169,13 @@ class GraphPainter extends CustomPainter {
       case NodeStatus.unvisited:
         return isDark ? const Color(0xFF424242) : const Color(0xFFE0E0E0);
       case NodeStatus.queued:
-        return isDark ? const Color(0xFFFFCA28) : const Color(0xFFF9A825);
+        return colorScheme.tertiary;
       case NodeStatus.visiting:
         return isDark ? const Color(0xFFEF5350) : const Color(0xFFD32F2F);
       case NodeStatus.visited:
         return isDark ? const Color(0xFF4CAF50) : const Color(0xFF388E3C);
       case NodeStatus.source:
-        return isDark ? const Color(0xFF42A5F5) : const Color(0xFF1976D2);
+        return colorScheme.primary;
       case NodeStatus.target:
         return isDark ? const Color(0xFFAB47BC) : const Color(0xFF7B1FA2);
     }
@@ -186,7 +186,7 @@ class GraphPainter extends CustomPainter {
       case EdgeStatus.none:
         return isDark ? Colors.white24 : Colors.black26;
       case EdgeStatus.exploring:
-        return isDark ? const Color(0xFFFFCA28) : const Color(0xFFF9A825);
+        return colorScheme.tertiary;
       case EdgeStatus.inTree:
         return isDark ? const Color(0xFF4CAF50) : const Color(0xFF388E3C);
       case EdgeStatus.rejected:
@@ -198,6 +198,6 @@ class GraphPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant GraphPainter oldDelegate) {
-    return oldDelegate.state != state;
+    return oldDelegate.state != state || oldDelegate.colorScheme != colorScheme;
   }
 }

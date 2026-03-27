@@ -137,7 +137,7 @@ class NQueensAlgorithm extends Algorithm {
   CustomPainter createPainter(AlgorithmState state, BuildContext context) {
     return _NQueensPainter(
       state: state as NQueensState,
-      brightness: Theme.of(context).brightness,
+      colorScheme: Theme.of(context).colorScheme,
     );
   }
 
@@ -154,10 +154,10 @@ class NQueensAlgorithm extends Algorithm {
 }
 
 class _NQueensPainter extends CustomPainter {
-  _NQueensPainter({required this.state, required this.brightness});
+  _NQueensPainter({required this.state, required this.colorScheme});
 
   final NQueensState state;
-  final Brightness brightness;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -166,22 +166,18 @@ class _NQueensPainter extends CustomPainter {
     final offsetX = (size.width - cellSize * n) / 2;
     final offsetY = (size.height - cellSize * n) / 2;
 
-    final isDark = brightness == Brightness.dark;
+    final isDark = colorScheme.brightness == Brightness.dark;
 
     final lightCell = isDark ? const Color(0xFF424242) : const Color(0xFFE0E0E0);
     final darkCell = isDark ? const Color(0xFF616161) : const Color(0xFFBDBDBD);
     final conflictColor = isDark
         ? const Color(0xFFEF5350).withValues(alpha: 0.4)
         : const Color(0xFFD32F2F).withValues(alpha: 0.3);
-    final tryingColor = isDark
-        ? const Color(0xFF42A5F5).withValues(alpha: 0.4)
-        : const Color(0xFF1976D2).withValues(alpha: 0.3);
+    final tryingColor = colorScheme.primary.withValues(alpha: isDark ? 0.4 : 0.3);
     final queenColor = isDark
         ? const Color(0xFF4CAF50)
         : const Color(0xFF388E3C);
-    final solvedQueenColor = isDark
-        ? const Color(0xFFFFCA28)
-        : const Color(0xFFF9A825);
+    final solvedQueenColor = colorScheme.tertiary;
 
     // Draw board
     for (var row = 0; row < n; row++) {
@@ -272,7 +268,7 @@ class _NQueensPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _NQueensPainter oldDelegate) {
-    return oldDelegate.state != state;
+    return oldDelegate.state != state || oldDelegate.colorScheme != colorScheme;
   }
 }
 

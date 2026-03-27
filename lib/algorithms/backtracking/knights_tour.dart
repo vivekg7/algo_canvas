@@ -157,7 +157,7 @@ class KnightsTourAlgorithm extends Algorithm {
   CustomPainter createPainter(AlgorithmState state, BuildContext context) {
     return _KnightsTourPainter(
       state: state as KnightsTourState,
-      brightness: Theme.of(context).brightness,
+      colorScheme: Theme.of(context).colorScheme,
     );
   }
 
@@ -174,10 +174,10 @@ class KnightsTourAlgorithm extends Algorithm {
 }
 
 class _KnightsTourPainter extends CustomPainter {
-  _KnightsTourPainter({required this.state, required this.brightness});
+  _KnightsTourPainter({required this.state, required this.colorScheme});
 
   final KnightsTourState state;
-  final Brightness brightness;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -186,12 +186,10 @@ class _KnightsTourPainter extends CustomPainter {
     final offsetX = (size.width - cellSize * n) / 2;
     final offsetY = (size.height - cellSize * n) / 2;
 
-    final isDark = brightness == Brightness.dark;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final lightCell = isDark ? const Color(0xFF424242) : const Color(0xFFE0E0E0);
     final darkCell = isDark ? const Color(0xFF616161) : const Color(0xFFBDBDBD);
-    final visitedColor = isDark
-        ? const Color(0xFF42A5F5).withValues(alpha: 0.3)
-        : const Color(0xFF1976D2).withValues(alpha: 0.2);
+    final visitedColor = colorScheme.primary.withValues(alpha: isDark ? 0.3 : 0.2);
     final currentColor = isDark
         ? const Color(0xFF4CAF50)
         : const Color(0xFF388E3C);
@@ -199,9 +197,7 @@ class _KnightsTourPainter extends CustomPainter {
         ? const Color(0xFFEF5350)
         : const Color(0xFFD32F2F);
     final numberColor = isDark ? Colors.white70 : Colors.black54;
-    final solvedColor = isDark
-        ? const Color(0xFFFFCA28)
-        : const Color(0xFFF9A825);
+    final solvedColor = colorScheme.tertiary;
 
     // Draw board
     for (var row = 0; row < n; row++) {
@@ -321,7 +317,7 @@ class _KnightsTourPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _KnightsTourPainter oldDelegate) {
-    return oldDelegate.state != state;
+    return oldDelegate.state != state || oldDelegate.colorScheme != colorScheme;
   }
 }
 

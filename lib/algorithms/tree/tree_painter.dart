@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:algo_canvas/algorithms/tree/tree_state.dart';
 
 class TreePainter extends CustomPainter {
-  TreePainter({required this.state, required this.brightness});
+  TreePainter({required this.state, required this.colorScheme});
 
   final TreeState state;
-  final Brightness brightness;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final isDark = brightness == Brightness.dark;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final padding = 20.0;
     final drawW = size.width - padding * 2;
     final drawH = size.height - padding * 2;
@@ -88,13 +88,13 @@ class TreePainter extends CustomPainter {
       case TreeNodeStatus.normal:
         return isDark ? const Color(0xFF424242) : const Color(0xFFE0E0E0);
       case TreeNodeStatus.highlighted:
-        return isDark ? const Color(0xFFFFCA28) : const Color(0xFFF9A825);
+        return colorScheme.tertiary;
       case TreeNodeStatus.visiting:
         return isDark ? const Color(0xFFEF5350) : const Color(0xFFD32F2F);
       case TreeNodeStatus.found:
         return isDark ? const Color(0xFF4CAF50) : const Color(0xFF388E3C);
       case TreeNodeStatus.inserted:
-        return isDark ? const Color(0xFF42A5F5) : const Color(0xFF1976D2);
+        return colorScheme.primary;
       case TreeNodeStatus.deleted:
         return isDark ? const Color(0xFFEF5350).withValues(alpha: 0.5) : const Color(0xFFD32F2F).withValues(alpha: 0.5);
     }
@@ -102,6 +102,6 @@ class TreePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant TreePainter oldDelegate) {
-    return oldDelegate.state != state;
+    return oldDelegate.state != state || oldDelegate.colorScheme != colorScheme;
   }
 }

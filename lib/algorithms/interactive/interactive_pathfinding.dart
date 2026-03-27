@@ -136,7 +136,7 @@ class InteractivePathfindingAlgorithm extends Algorithm {
     // Convert to GridState for the shared painter
     return GridPainter(
       state: GridState(grid: s.grid, rows: s.rows, cols: s.cols, step: 0, description: s.description),
-      brightness: Theme.of(context).brightness,
+      colorScheme: Theme.of(context).colorScheme,
     );
   }
 }

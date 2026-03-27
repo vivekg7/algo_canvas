@@ -87,7 +87,7 @@ class MonteCarloPiAlgorithm extends Algorithm {
   CustomPainter createPainter(AlgorithmState state, BuildContext context) {
     return _MonteCarloPiPainter(
       state: state as MonteCarloPiState,
-      brightness: Theme.of(context).brightness,
+      colorScheme: Theme.of(context).colorScheme,
     );
   }
 
@@ -104,16 +104,16 @@ class MonteCarloPiAlgorithm extends Algorithm {
 }
 
 class _MonteCarloPiPainter extends CustomPainter {
-  _MonteCarloPiPainter({required this.state, required this.brightness});
+  _MonteCarloPiPainter({required this.state, required this.colorScheme});
 
   final MonteCarloPiState state;
-  final Brightness brightness;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final isDark = brightness == Brightness.dark;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final bgColor = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF5F5F5);
-    final insideColor = isDark ? const Color(0xFF42A5F5) : const Color(0xFF1976D2);
+    final insideColor = colorScheme.primary;
     final outsideColor = isDark
         ? const Color(0xFFEF5350).withValues(alpha: 0.5)
         : const Color(0xFFD32F2F).withValues(alpha: 0.4);
@@ -208,7 +208,7 @@ class _MonteCarloPiPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _MonteCarloPiPainter oldDelegate) {
-    return oldDelegate.state != state;
+    return oldDelegate.state != state || oldDelegate.colorScheme != colorScheme;
   }
 }
 

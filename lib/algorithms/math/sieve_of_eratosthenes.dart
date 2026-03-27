@@ -89,7 +89,7 @@ class SieveOfEratosthenesAlgorithm extends Algorithm {
   CustomPainter createPainter(AlgorithmState state, BuildContext context) {
     return _SievePainter(
       state: state as SieveState,
-      brightness: Theme.of(context).brightness,
+      colorScheme: Theme.of(context).colorScheme,
     );
   }
 
@@ -106,10 +106,10 @@ class SieveOfEratosthenesAlgorithm extends Algorithm {
 }
 
 class _SievePainter extends CustomPainter {
-  _SievePainter({required this.state, required this.brightness});
+  _SievePainter({required this.state, required this.colorScheme});
 
   final SieveState state;
-  final Brightness brightness;
+  final ColorScheme colorScheme;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -122,10 +122,10 @@ class _SievePainter extends CustomPainter {
     final offsetX = (size.width - cellSize * cols) / 2;
     final offsetY = (size.height - cellSize * rows) / 2;
 
-    final isDark = brightness == Brightness.dark;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final primeColor = isDark ? const Color(0xFF4CAF50) : const Color(0xFF388E3C);
     final compositeColor = isDark ? const Color(0xFF424242) : const Color(0xFFBDBDBD);
-    final factorColor = isDark ? const Color(0xFFFFCA28) : const Color(0xFFF9A825);
+    final factorColor = colorScheme.tertiary;
     final multipleColor = isDark ? const Color(0xFFEF5350) : const Color(0xFFD32F2F);
     final textColor = isDark ? Colors.white : Colors.black;
     final dimText = isDark ? Colors.white38 : Colors.black26;
@@ -178,7 +178,7 @@ class _SievePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _SievePainter oldDelegate) {
-    return oldDelegate.state != state;
+    return oldDelegate.state != state || oldDelegate.colorScheme != colorScheme;
   }
 }
 

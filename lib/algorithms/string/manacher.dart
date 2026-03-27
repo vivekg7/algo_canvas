@@ -109,7 +109,7 @@ class ManacherAlgorithm extends Algorithm {
 
   @override
   CustomPainter createPainter(AlgorithmState state, BuildContext context) =>
-      StringMatchPainter(state: state as StringMatchState, brightness: Theme.of(context).brightness);
+      StringMatchPainter(state: state as StringMatchState, colorScheme: Theme.of(context).colorScheme);
 
   @override
   List<LegendItem>? buildLegend(BuildContext context) => stringLegend(context);
