@@ -2,7 +2,7 @@
 
 ## App Title
 
-Algo Canvas — Algorithm Visualizer
+Algo Canvas - See Algorithms
 
 ## Short Description
 
