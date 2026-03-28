@@ -6,11 +6,11 @@ Algo Canvas - See Algorithms
 
 ## Short Description
 
-Watch 90 algorithms come alive — sorting, graphs, fractals, physics & more. Free & offline.
+Visualize algorithms — sorting, graphs, fractals & more. Free, offline & no ads.
 
 ## Full Description
 
-Algo Canvas is a free, open-source algorithm visualizer that brings 90 algorithms to life through interactive animations. No internet required. No ads. No tracking. Just pure learning.
+Algo Canvas is a free, open-source algorithm visualizer that brings algorithms to life through interactive animations. No internet required. No ads. No tracking. Just pure learning.
 
 Step through sorting algorithms, watch graph traversals unfold, explore fractal geometry, simulate physics systems, and interact directly with the canvas — all on your device, completely offline.
 
