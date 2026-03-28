@@ -190,6 +190,14 @@ class _HomeScreenState extends State<HomeScreen>
                         itemCount: filtered.length,
                         itemBuilder: (context, index) {
                           final algorithm = filtered[index];
+                          final card = AlgorithmCard(
+                            algorithm: algorithm,
+                            onTap: () =>
+                                _openVisualizer(context, algorithm),
+                          );
+                          if (!widget.themeController.animationsEnabled) {
+                            return card;
+                          }
                           // Stagger first 12 cards, rest appear with the last
                           final start = (index.clamp(0, 11) * 0.05);
                           final end = (start + 0.4).clamp(0.0, 1.0);
@@ -204,11 +212,7 @@ class _HomeScreenState extends State<HomeScreen>
                                 begin: const Offset(0, 0.1),
                                 end: Offset.zero,
                               ).animate(animation),
-                              child: AlgorithmCard(
-                                algorithm: algorithm,
-                                onTap: () =>
-                                    _openVisualizer(context, algorithm),
-                              ),
+                              child: card,
                             ),
                           );
                         },
@@ -229,10 +233,22 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _openVisualizer(BuildContext context, Algorithm algorithm) {
+    final screen = VisualizerScreen(algorithm: algorithm);
+    if (!widget.themeController.animationsEnabled) {
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (_, _, _) => screen,
+          transitionDuration: Duration.zero,
+          reverseTransitionDuration: Duration.zero,
+        ),
+      );
+      return;
+    }
     Navigator.push(
       context,
       PageRouteBuilder(
-        pageBuilder: (_, _, _) => VisualizerScreen(algorithm: algorithm),
+        pageBuilder: (_, _, _) => screen,
         transitionsBuilder: (_, animation, _, child) {
           return FadeTransition(
             opacity: animation,

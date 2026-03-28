@@ -2,6 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:algo_canvas/theme/app_theme.dart';
 
+class ThemeControllerScope extends InheritedNotifier<ThemeController> {
+  const ThemeControllerScope({
+    super.key,
+    required ThemeController controller,
+    required super.child,
+  }) : super(notifier: controller);
+
+  static ThemeController of(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<ThemeControllerScope>()!
+        .notifier!;
+  }
+}
+
 class ThemeController extends ChangeNotifier {
   ThemeController() {
     _load();
@@ -9,12 +23,15 @@ class ThemeController extends ChangeNotifier {
 
   static const _themeKey = 'theme_mode';
   static const _accentKey = 'accent_color';
+  static const _animationsKey = 'animations_enabled';
 
   AppThemeMode _mode = AppThemeMode.system;
   AccentColor _accent = AccentColor.deepPurple;
+  bool _animationsEnabled = true;
 
   AppThemeMode get mode => _mode;
   AccentColor get accent => _accent;
+  bool get animationsEnabled => _animationsEnabled;
 
   ThemeData get lightTheme => AppTheme.light(_accent.seed);
 
@@ -52,6 +69,14 @@ class ThemeController extends ChangeNotifier {
     await prefs.setString(_accentKey, accent.name);
   }
 
+  Future<void> setAnimationsEnabled(bool enabled) async {
+    if (_animationsEnabled == enabled) return;
+    _animationsEnabled = enabled;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_animationsKey, enabled);
+  }
+
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -70,6 +95,8 @@ class ThemeController extends ChangeNotifier {
         orElse: () => AccentColor.deepPurple,
       );
     }
+
+    _animationsEnabled = prefs.getBool(_animationsKey) ?? true;
 
     notifyListeners();
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:algo_canvas/core/algorithm.dart';
 import 'package:algo_canvas/core/visualizer_controller.dart';
+import 'package:algo_canvas/theme/theme_controller.dart';
 
 class PlaybackControls extends StatelessWidget {
   const PlaybackControls({
@@ -183,7 +184,12 @@ class _AnimatedPlayPauseButtonState extends State<_AnimatedPlayPauseButton>
   void didUpdateWidget(_AnimatedPlayPauseButton oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isPlaying != oldWidget.isPlaying) {
-      widget.isPlaying ? _controller.forward() : _controller.reverse();
+      final animate = ThemeControllerScope.of(context).animationsEnabled;
+      if (animate) {
+        widget.isPlaying ? _controller.forward() : _controller.reverse();
+      } else {
+        _controller.value = widget.isPlaying ? 1.0 : 0.0;
+      }
     }
   }
 

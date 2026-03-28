@@ -20,6 +20,8 @@ class SettingsScreen extends StatelessWidget {
             _themeTile(context),
             const Divider(),
             _accentColorTile(context),
+            const Divider(),
+            _animationsTile(context),
             const SizedBox(height: 16),
             _sectionHeader(context, 'About'),
             _aboutTile(context),
@@ -160,6 +162,19 @@ class SettingsScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _animationsTile(BuildContext context) {
+    return SwitchListTile(
+      secondary: Icon(
+        Icons.animation,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+      title: const Text('Animations'),
+      subtitle: const Text('Card entrances, transitions, and legend effects'),
+      value: themeController.animationsEnabled,
+      onChanged: (v) => themeController.setAnimationsEnabled(v),
     );
   }
 

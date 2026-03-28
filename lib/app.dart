@@ -9,18 +9,21 @@ class AlgoCanvasApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: themeController,
-      builder: (context, _) {
-        return MaterialApp(
-          title: 'Algo Canvas',
-          theme: themeController.lightTheme,
-          darkTheme: themeController.darkTheme,
-          themeMode: themeController.themeMode,
-          debugShowCheckedModeBanner: false,
-          home: HomeScreen(themeController: themeController),
-        );
-      },
+    return ThemeControllerScope(
+      controller: themeController,
+      child: ListenableBuilder(
+        listenable: themeController,
+        builder: (context, _) {
+          return MaterialApp(
+            title: 'Algo Canvas',
+            theme: themeController.lightTheme,
+            darkTheme: themeController.darkTheme,
+            themeMode: themeController.themeMode,
+            debugShowCheckedModeBanner: false,
+            home: HomeScreen(themeController: themeController),
+          );
+        },
+      ),
     );
   }
 }

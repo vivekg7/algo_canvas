@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:algo_canvas/theme/theme_controller.dart';
 
 class LegendItem {
   const LegendItem(this.color, this.label);
@@ -19,20 +20,35 @@ class _ColorLegendState extends State<ColorLegend>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
+  bool get _animate =>
+      ThemeControllerScope.of(context).animationsEnabled;
+
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
-    )..forward();
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Drive to end immediately if animations disabled, else animate
+    _controller.value = _animate ? 0.0 : 1.0;
+    if (_animate) _controller.forward();
   }
 
   @override
   void didUpdateWidget(ColorLegend oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.items.length != oldWidget.items.length) {
-      _controller.forward(from: 0);
+      if (_animate) {
+        _controller.forward(from: 0);
+      } else {
+        _controller.value = 1.0;
+      }
     }
   }
 
