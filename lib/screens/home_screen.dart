@@ -16,15 +16,31 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   final _searchController = TextEditingController();
   AlgorithmCategory? _selectedCategory;
   String _query = '';
+  late final AnimationController _staggerController;
+
+  @override
+  void initState() {
+    super.initState();
+    _staggerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    )..forward();
+  }
 
   @override
   void dispose() {
+    _staggerController.dispose();
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _restartStagger() {
+    _staggerController.forward(from: 0);
   }
 
   List<Algorithm> get _filtered {
@@ -92,6 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onPressed: () {
                           _searchController.clear();
                           setState(() => _query = '');
+                          _restartStagger();
                         },
                       )
                     : null,
@@ -105,7 +122,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
                 isDense: true,
               ),
-              onChanged: (value) => setState(() => _query = value),
+              onChanged: (value) {
+                setState(() => _query = value);
+                _restartStagger();
+              },
             ),
           ),
           // Category filter chips
@@ -121,8 +141,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: FilterChip(
                       label: const Text('All'),
                       selected: _selectedCategory == null,
-                      onSelected: (_) =>
-                          setState(() => _selectedCategory = null),
+                      onSelected: (_) {
+                        setState(() => _selectedCategory = null);
+                        _restartStagger();
+                      },
                       visualDensity: VisualDensity.compact,
                     ),
                   ),
@@ -132,10 +154,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: FilterChip(
                         label: Text(category.label),
                         selected: _selectedCategory == category,
-                        onSelected: (_) => setState(() {
-                          _selectedCategory =
-                              _selectedCategory == category ? null : category;
-                        }),
+                        onSelected: (_) {
+                          setState(() {
+                            _selectedCategory =
+                                _selectedCategory == category ? null : category;
+                          });
+                          _restartStagger();
+                        },
                         visualDensity: VisualDensity.compact,
                       ),
                     ),
@@ -168,10 +193,26 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemCount: filtered.length,
                         itemBuilder: (context, index) {
                           final algorithm = filtered[index];
-                          return AlgorithmCard(
-                            algorithm: algorithm,
-                            onTap: () =>
-                                _openVisualizer(context, algorithm),
+                          // Stagger first 12 cards, rest appear with the last
+                          final start = (index.clamp(0, 11) * 0.05);
+                          final end = (start + 0.4).clamp(0.0, 1.0);
+                          final animation = CurvedAnimation(
+                            parent: _staggerController,
+                            curve: Interval(start, end, curve: Curves.easeOut),
+                          );
+                          return FadeTransition(
+                            opacity: animation,
+                            child: SlideTransition(
+                              position: Tween(
+                                begin: const Offset(0, 0.1),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: AlgorithmCard(
+                                algorithm: algorithm,
+                                onTap: () =>
+                                    _openVisualizer(context, algorithm),
+                              ),
+                            ),
                           );
                         },
                       );
