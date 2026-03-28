@@ -119,14 +119,9 @@ class PlaybackControls extends StatelessWidget {
           tooltip: 'Previous step',
         ),
         const SizedBox(width: 4),
-        IconButton.filled(
-          icon: Icon(
-            isPlaying
-                ? Icons.pause_rounded
-                : Icons.play_arrow_rounded,
-          ),
+        _AnimatedPlayPauseButton(
+          isPlaying: isPlaying,
           onPressed: isPlaying ? controller.pause : controller.play,
-          tooltip: isPlaying ? 'Pause' : 'Play',
         ),
         const SizedBox(width: 4),
         IconButton(
@@ -145,6 +140,61 @@ class PlaybackControls extends StatelessWidget {
           tooltip: 'Reset',
         ),
       ],
+    );
+  }
+}
+
+class _AnimatedPlayPauseButton extends StatefulWidget {
+  const _AnimatedPlayPauseButton({
+    required this.isPlaying,
+    required this.onPressed,
+  });
+
+  final bool isPlaying;
+  final VoidCallback onPressed;
+
+  @override
+  State<_AnimatedPlayPauseButton> createState() =>
+      _AnimatedPlayPauseButtonState();
+}
+
+class _AnimatedPlayPauseButtonState extends State<_AnimatedPlayPauseButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+      value: widget.isPlaying ? 1.0 : 0.0,
+    );
+  }
+
+  @override
+  void didUpdateWidget(_AnimatedPlayPauseButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isPlaying != oldWidget.isPlaying) {
+      widget.isPlaying ? _controller.forward() : _controller.reverse();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton.filled(
+      icon: AnimatedIcon(
+        icon: AnimatedIcons.play_pause,
+        progress: _controller,
+      ),
+      onPressed: widget.onPressed,
+      tooltip: widget.isPlaying ? 'Pause' : 'Play',
     );
   }
 }
