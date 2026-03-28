@@ -22,7 +22,8 @@ class AlgorithmCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        child: Row(
+        child: IntrinsicHeight(
+          child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Category color stripe
@@ -106,6 +107,7 @@ class AlgorithmCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

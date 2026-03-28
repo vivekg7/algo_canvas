@@ -178,6 +178,14 @@ class _HomeScreenState extends State<HomeScreen>
                     builder: (context, constraints) {
                       final crossAxisCount =
                           _crossAxisCount(constraints.maxWidth);
+                      if (crossAxisCount == 1) {
+                        return ListView.builder(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: filtered.length,
+                          itemBuilder: (context, index) =>
+                              _buildItem(filtered, index),
+                        );
+                      }
                       return GridView.builder(
                         padding: const EdgeInsets.all(16),
                         gridDelegate:
@@ -188,39 +196,43 @@ class _HomeScreenState extends State<HomeScreen>
                           childAspectRatio: 1.6,
                         ),
                         itemCount: filtered.length,
-                        itemBuilder: (context, index) {
-                          final algorithm = filtered[index];
-                          final card = AlgorithmCard(
-                            algorithm: algorithm,
-                            onTap: () =>
-                                _openVisualizer(context, algorithm),
-                          );
-                          if (!widget.themeController.animationsEnabled) {
-                            return card;
-                          }
-                          // Stagger first 12 cards, rest appear with the last
-                          final start = (index.clamp(0, 11) * 0.05);
-                          final end = (start + 0.4).clamp(0.0, 1.0);
-                          final animation = CurvedAnimation(
-                            parent: _staggerController,
-                            curve: Interval(start, end, curve: Curves.easeOut),
-                          );
-                          return FadeTransition(
-                            opacity: animation,
-                            child: SlideTransition(
-                              position: Tween(
-                                begin: const Offset(0, 0.1),
-                                end: Offset.zero,
-                              ).animate(animation),
-                              child: card,
-                            ),
-                          );
-                        },
+                        itemBuilder: (context, index) =>
+                            _buildItem(filtered, index),
                       );
                     },
                   ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildItem(List<Algorithm> filtered, int index) {
+    final algorithm = filtered[index];
+    final card = Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: AlgorithmCard(
+        algorithm: algorithm,
+        onTap: () => _openVisualizer(context, algorithm),
+      ),
+    );
+    if (!widget.themeController.animationsEnabled) {
+      return card;
+    }
+    final start = (index.clamp(0, 11) * 0.05);
+    final end = (start + 0.4).clamp(0.0, 1.0);
+    final animation = CurvedAnimation(
+      parent: _staggerController,
+      curve: Interval(start, end, curve: Curves.easeOut),
+    );
+    return FadeTransition(
+      opacity: animation,
+      child: SlideTransition(
+        position: Tween(
+          begin: const Offset(0, 0.1),
+          end: Offset.zero,
+        ).animate(animation),
+        child: card,
       ),
     );
   }
