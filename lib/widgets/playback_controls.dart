@@ -78,13 +78,20 @@ class PlaybackControls extends StatelessWidget {
                 ),
           ),
           Expanded(
-            child: Slider(
-              value: totalSteps <= 1 ? 0 : currentIndex.toDouble(),
-              min: 0,
-              max: totalSteps <= 1 ? 1 : (totalSteps - 1).toDouble(),
-              onChanged: totalSteps <= 1
-                  ? null
-                  : (value) => controller.seekTo(value.round()),
+            child: SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 7),
+                overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
+                trackHeight: 3,
+              ),
+              child: Slider(
+                value: totalSteps <= 1 ? 0 : currentIndex.toDouble(),
+                min: 0,
+                max: totalSteps <= 1 ? 1 : (totalSteps - 1).toDouble(),
+                onChanged: totalSteps <= 1
+                    ? null
+                    : (value) => controller.seekTo(value.round()),
+              ),
             ),
           ),
           Text(
@@ -208,21 +215,41 @@ class _SpeedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final speedLabel = controller.speed == controller.speed.roundToDouble()
+        ? '${controller.speed.round()}x'
+        : '${controller.speed}x';
+
     return PopupMenuButton<double>(
       initialValue: controller.speed,
       onSelected: controller.setSpeed,
       tooltip: 'Playback speed',
       itemBuilder: (context) => _speeds.map((s) {
+        final label = s == s.roundToDouble() ? '${s.round()}x' : '${s}x';
         return PopupMenuItem(
           value: s,
-          child: Text('${s}x'),
+          child: Text(label),
         );
       }).toList(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        child: Text(
-          '${controller.speed}x',
-          style: Theme.of(context).textTheme.labelLarge,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: colorScheme.secondaryContainer,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.speed, size: 14, color: colorScheme.onSecondaryContainer),
+            const SizedBox(width: 4),
+            Text(
+              speedLabel,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: colorScheme.onSecondaryContainer,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ),
       ),
     );

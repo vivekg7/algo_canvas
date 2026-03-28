@@ -174,6 +174,22 @@ class _VisualizerScreenState extends State<VisualizerScreen> {
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
+                // Thin progress bar
+                if (_controller.mode != AlgorithmMode.live &&
+                    _controller.mode != AlgorithmMode.interactive)
+                  ListenableBuilder(
+                    listenable: _controller,
+                    builder: (context, _) {
+                      final total = _controller.totalSteps;
+                      final progress = total <= 1
+                          ? 0.0
+                          : _controller.currentIndex / (total - 1);
+                      return LinearProgressIndicator(
+                        value: progress,
+                        minHeight: 2,
+                      );
+                    },
+                  ),
                 // Step description
                 ListenableBuilder(
                   listenable: _controller,
