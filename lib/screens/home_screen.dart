@@ -21,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen>
   final _searchController = TextEditingController();
   AlgorithmCategory? _selectedCategory;
   String _query = '';
+  bool _isSearching = false;
   late final AnimationController _staggerController;
 
   @override
@@ -77,8 +78,37 @@ class _HomeScreenState extends State<HomeScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Algo Canvas'),
+        title: _isSearching
+            ? TextField(
+                controller: _searchController,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: 'Search algorithms...',
+                  border: InputBorder.none,
+                ),
+                onChanged: (value) {
+                  setState(() => _query = value);
+                  _restartStagger();
+                },
+              )
+            : const Text('Algo Canvas'),
         actions: [
+          IconButton(
+            icon: Icon(_isSearching ? Icons.close : Icons.search),
+            tooltip: _isSearching ? 'Close search' : 'Search',
+            onPressed: () {
+              setState(() {
+                if (_isSearching) {
+                  _isSearching = false;
+                  _searchController.clear();
+                  _query = '';
+                  _restartStagger();
+                } else {
+                  _isSearching = true;
+                }
+              });
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.settings_outlined),
             tooltip: 'Settings',
@@ -94,40 +124,6 @@ class _HomeScreenState extends State<HomeScreen>
       ),
       body: Column(
         children: [
-          // Search bar
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search algorithms...',
-                prefixIcon: const Icon(Icons.search, size: 20),
-                suffixIcon: _query.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, size: 20),
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() => _query = '');
-                          _restartStagger();
-                        },
-                      )
-                    : null,
-                filled: true,
-                fillColor: colorScheme.surfaceContainerHighest
-                    .withValues(alpha: 0.5),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                isDense: true,
-              ),
-              onChanged: (value) {
-                setState(() => _query = value);
-                _restartStagger();
-              },
-            ),
-          ),
           // Category filter chips
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
@@ -152,6 +148,7 @@ class _HomeScreenState extends State<HomeScreen>
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: FilterChip(
+                        avatar: Icon(category.icon, size: 16),
                         label: Text(category.label),
                         selected: _selectedCategory == category,
                         onSelected: (_) {
