@@ -193,8 +193,23 @@ class _HomeScreenState extends State<HomeScreen> {
   void _openVisualizer(BuildContext context, Algorithm algorithm) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => VisualizerScreen(algorithm: algorithm),
+      PageRouteBuilder(
+        pageBuilder: (_, _, _) => VisualizerScreen(algorithm: algorithm),
+        transitionsBuilder: (_, animation, _, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position: Tween(
+                begin: const Offset(0, 0.04),
+                end: Offset.zero,
+              ).animate(CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOut,
+              )),
+              child: child,
+            ),
+          );
+        },
       ),
     );
   }
