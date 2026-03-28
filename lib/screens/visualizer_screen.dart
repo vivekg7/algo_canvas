@@ -223,10 +223,20 @@ class _VisualizerScreenState extends State<VisualizerScreen> {
                       }
                       final canvas = Padding(
                         padding: const EdgeInsets.all(16),
-                        child: ClipRect(
-                          child: CustomPaint(
-                            painter: widget.algorithm.createPainter(state, context),
-                            size: Size.infinite,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                              width: 1,
+                            ),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: CustomPaint(
+                              painter: widget.algorithm.createPainter(state, context),
+                              size: Size.infinite,
+                            ),
                           ),
                         ),
                       );
