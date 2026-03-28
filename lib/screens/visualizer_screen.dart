@@ -83,21 +83,25 @@ class _VisualizerScreenState extends State<VisualizerScreen> {
           children: [
             // Full-bleed canvas
             Positioned.fill(
-              child: ListenableBuilder(
-                listenable: _controller,
-                builder: (context, _) {
-                  final state = _controller.currentState;
-                  if (state == null) {
-                    return const SizedBox.shrink();
-                  }
-                  return ClipRect(
-                    child: CustomPaint(
-                      painter:
-                          widget.algorithm.createPainter(state, context),
-                      size: Size.infinite,
-                    ),
-                  );
-                },
+              child: InteractiveViewer(
+                minScale: 1.0,
+                maxScale: 5.0,
+                child: ListenableBuilder(
+                  listenable: _controller,
+                  builder: (context, _) {
+                    final state = _controller.currentState;
+                    if (state == null) {
+                      return const SizedBox.shrink();
+                    }
+                    return ClipRect(
+                      child: CustomPaint(
+                        painter:
+                            widget.algorithm.createPainter(state, context),
+                        size: Size.infinite,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
             // Exit button
@@ -211,7 +215,11 @@ class _VisualizerScreenState extends State<VisualizerScreen> {
                         ),
                       );
                       if (_controller.mode != AlgorithmMode.interactive) {
-                        return canvas;
+                        return InteractiveViewer(
+                          minScale: 1.0,
+                          maxScale: 5.0,
+                          child: canvas,
+                        );
                       }
                       return LayoutBuilder(
                         builder: (context, constraints) {
