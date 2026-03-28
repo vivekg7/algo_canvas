@@ -126,7 +126,9 @@ class FourierEpicyclesAlgorithm extends Algorithm {
     // Close the loop by connecting end to start
     final closed = [...s.drawnPoints, s.drawnPoints.first];
     final sampled = _resample(closed, min(closed.length, 256));
-    final terms = _computeDFT(sampled);
+    final allTerms = _computeDFT(sampled);
+    // Keep only the top 50 terms by amplitude
+    final terms = allTerms.sublist(0, min(allTerms.length, 50));
     final numTerms = terms.length;
 
     _numTerms = numTerms;
