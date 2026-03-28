@@ -216,6 +216,11 @@ class SettingsScreen extends StatelessWidget {
             'Licensed under GPLv3.',
             style: TextStyle(fontSize: 12),
           ),
+          SizedBox(height: 12),
+          Text(
+            'github.com/vivekg7/algo_canvas',
+            style: TextStyle(fontSize: 12),
+          ),
         ],
       ),
     );
