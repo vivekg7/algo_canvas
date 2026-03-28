@@ -1,6 +1,6 @@
 # Algorithms
 
-90 algorithms across 15 categories. Checked items are implemented.
+91 algorithms across 15 categories. Checked items are implemented.
 
 ## Sorting
 
@@ -134,3 +134,4 @@
 - [x] Spring-Mass System (drag nodes connected by springs)
 - [x] Pendulum (drag to set angle, release to simulate)
 - [x] Double Pendulum (drag either bob, chaotic motion)
+- [x] Fourier Epicycles (draw a shape, watch rotating circles reconstruct it)

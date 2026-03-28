@@ -2,7 +2,7 @@
 
 An open-source, cross-platform algorithm visualizer built with Flutter. Watch algorithms come to life step by step — from sorting and graph traversal to fluid simulations and fractal geometry.
 
-**90 algorithms. 15 categories. Zero internet. Zero ads. Zero tracking.**
+**91 algorithms. 15 categories. Zero internet. Zero ads. Zero tracking.**
 
 ## Philosophy
 
@@ -30,7 +30,7 @@ An open-source, cross-platform algorithm visualizer built with Flutter. Watch al
 | [Compression](docs/ALGORITHMS.md#compression--encoding)             | 3     | Huffman, RLE, LZW                                    |
 | [Fractals](docs/ALGORITHMS.md#fractals)                             | 7     | Mandelbrot, Julia, Sierpinski, Koch                  |
 | [Space-Filling Curves](docs/ALGORITHMS.md#space-filling-curves)     | 3     | Hilbert, Peano, Z-Order                              |
-| [Interactive](docs/ALGORITHMS.md#interactive)                       | 8     | Bezier, Splines, Pendulums, Spring-Mass, Pathfinding |
+| [Interactive](docs/ALGORITHMS.md#interactive)                       | 9     | Bezier, Splines, Pendulums, Fourier Epicycles        |
 
 See the full list: [docs/ALGORITHMS.md](docs/ALGORITHMS.md)
 
